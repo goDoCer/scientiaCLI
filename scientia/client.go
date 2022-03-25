@@ -34,7 +34,8 @@ type loginDetails struct {
 	Password string `json:"password"`
 }
 
-type loginResponse struct {
+// LoginTokens contains the access and refresh tokens
+type LoginTokens struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
@@ -48,12 +49,12 @@ func (c *APIClient) Login(username string, password string) error {
 		return err
 	}
 
-	resp, err := http.Post(baseURL+"auth/login", "application/json", bytes.NewBuffer(jsonValue))
+	resp, err := c.Post(baseURL+"auth/login", "application/json", bytes.NewBuffer(jsonValue))
 	if err := checkResponse(resp, err); err != nil {
 		return err
 	}
 
-	var response loginResponse
+	var response LoginTokens
 	err = json.NewDecoder(resp.Body).Decode(&response)
 
 	if err != nil {
@@ -69,4 +70,26 @@ func (c *APIClient) Login(username string, password string) error {
 	}).Info("Successfully logged in")
 
 	return nil
+}
+
+func (c *APIClient) GetTokens() LoginTokens {
+	return LoginTokens{
+		AccessToken:  c.accessToken,
+		RefreshToken: c.refreshToken,
+	}
+}
+
+func (c *APIClient) AddTokens(tokens LoginTokens) {
+	c.accessToken = tokens.AccessToken
+	c.refreshToken = tokens.RefreshToken
+}
+
+func (c *APIClient) GetCourses() {
+	year := getCurrentAcademicYear()
+
+	resp, err := c.Get(baseURL + "courses/" + year)
+	if err != nil {
+		panic(err)
+	}
+	log.Info(resp)
 }

@@ -2,6 +2,8 @@ package cli
 
 import (
 	"fmt"
+	"os"
+	"path"
 	"scientia-cli/scientia"
 	"syscall"
 
@@ -10,9 +12,17 @@ import (
 )
 
 var client scientia.APIClient
+var tokenPath string
 
 func init() {
 	client = scientia.NewAPIClient()
+	filepath, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	tokenPath = path.Dir(filepath) + "/token.txt"
+	loginDetails, _ := loadDetails()
+	client.AddTokens(*loginDetails)
 }
 
 var commands = []*cli.Command{
@@ -27,10 +37,20 @@ var commands = []*cli.Command{
 				return err
 			}
 			password := string(bytePassword)
-
 			err = client.Login(username, password)
-			return err
+			if err != nil {
+				return err
+			}
+			return saveDetails(client.GetTokens())
 		},
 		// Flags: ,
+	},
+	{
+		Name:  "download",
+		Usage: "download a file from scientia",
+		Action: func(c *cli.Context) error {
+			client.GetCourses()
+			return nil
+		},
 	},
 }

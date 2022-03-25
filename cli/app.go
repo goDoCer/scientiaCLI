@@ -19,7 +19,9 @@ func NewCLIApp() App {
 			Usage:    "Scientia is a command line interface for the Scientia API",
 			Commands: commands,
 			ExitErrHandler: func(c *cli.Context, err error) {
-				log.Error(err)
+				if err != nil {
+					log.Error(err)
+				}
 			},
 		},
 	}
