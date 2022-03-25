@@ -9,6 +9,12 @@ import (
 	"golang.org/x/term"
 )
 
+var client scientia.APIClient
+
+func init() {
+	client = scientia.NewAPIClient()
+}
+
 var commands = []*cli.Command{
 	{
 		Name:  "login",
@@ -21,8 +27,7 @@ var commands = []*cli.Command{
 				return err
 			}
 			password := string(bytePassword)
-			client := scientia.NewAPIClient()
-			
+
 			err = client.Login(username, password)
 			return err
 		},
