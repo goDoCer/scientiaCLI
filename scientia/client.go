@@ -3,7 +3,11 @@ package scientia
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path"
 	"time"
 
 	"github.com/pkg/errors"
@@ -84,12 +88,85 @@ func (c *APIClient) AddTokens(tokens LoginTokens) {
 	c.refreshToken = tokens.RefreshToken
 }
 
-func (c *APIClient) GetCourses() {
+func (c *APIClient) GetCourses() []Course {
 	year := getCurrentAcademicYear()
 
-	resp, err := c.Get(baseURL + "courses/" + year)
+	req, err := http.NewRequest("GET", baseURL+"courses/"+year, nil)
+	req.Header.Add("Authorization", "Bearer "+c.accessToken)
+
 	if err != nil {
 		panic(err)
 	}
-	log.Info(resp)
+	resp, err := c.Do(req)
+	if err != nil {
+		panic(err)
+	}
+
+	var courses []Course
+	err = json.NewDecoder(resp.Body).Decode(&courses)
+	return courses
+}
+
+func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
+	year := getCurrentAcademicYear()
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources?year=%s&course=%s", baseURL, year, courseCode), nil)
+	req.Header.Add("Authorization", "Bearer "+c.accessToken)
+
+	if err != nil {
+		panic(err)
+	}
+	resp, err := c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var resources []Resource
+	err = json.NewDecoder(resp.Body).Decode(&resources)
+
+	files := make([]Resource, 0)
+	for _, resource := range resources {
+		if resource.Type == "file" {
+			files = append(files, resource)
+		}
+	}
+
+	return files, nil
+}
+
+func (c *APIClient) Download(resource Resource) error {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources/%d/file", baseURL, resource.ID), nil)
+	req.Header.Add("Authorization", "Bearer "+c.accessToken)
+
+	if err != nil {
+		panic(err)
+	}
+	resp, err := c.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	fileExtension := path.Ext(resource.Path)
+	return os.WriteFile(resource.Title+fileExtension, data, 0777)
+}
+
+func (c *APIClient) DownloadCourse(courseCode string) error {
+	files, err := c.ListFiles(courseCode)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if err := c.Download(file); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

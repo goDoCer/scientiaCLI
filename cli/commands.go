@@ -49,7 +49,20 @@ var commands = []*cli.Command{
 		Name:  "download",
 		Usage: "download a file from scientia",
 		Action: func(c *cli.Context) error {
-			client.GetCourses()
+
+			// scientia download <course_name>
+			courses := client.GetCourses()
+
+			for _, course := range courses {
+				if course.Title == "Distributed Algorithms" {
+
+					err := client.DownloadCourse(course.Code)
+					if err != nil {
+						return err
+					}
+				}
+			}
+
 			return nil
 		},
 	},
