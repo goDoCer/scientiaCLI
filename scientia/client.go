@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/schollz/progressbar/v3"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -153,7 +154,7 @@ func (c *APIClient) Download(resource Resource) error {
 	}
 
 	fileExtension := path.Ext(resource.Path)
-	return os.WriteFile(resource.Title+fileExtension, data, 0777)
+	return os.WriteFile(resource.Title+fileExtension, data, 0o777)
 }
 
 func (c *APIClient) DownloadCourse(course Course) error {
@@ -162,12 +163,17 @@ func (c *APIClient) DownloadCourse(course Course) error {
 		return err
 	}
 	dirName := course.Code + "-" + course.Title
-	os.Mkdir(dirName, 0777)
+	os.Mkdir(dirName, 0o777)
 	os.Chdir(dirName)
+
+	// TODO: This feels disgusting so maybe find a better way to separate concerns
+	bar := progressbar.Default(int64(len(files)), "Downloading files")
+
 	for _, file := range files {
 		if err := c.Download(file); err != nil {
 			return err
 		}
+		bar.Add(1)
 	}
 	os.Chdir("..")
 	return nil
