@@ -156,17 +156,20 @@ func (c *APIClient) Download(resource Resource) error {
 	return os.WriteFile(resource.Title+fileExtension, data, 0777)
 }
 
-func (c *APIClient) DownloadCourse(courseCode string) error {
-	files, err := c.ListFiles(courseCode)
+func (c *APIClient) DownloadCourse(course Course) error {
+
+	files, err := c.ListFiles(course.Code)
 	if err != nil {
 		return err
 	}
-
+	dirName := course.Code + "-" + course.Title
+	os.Mkdir(dirName, 0777)
+	os.Chdir(dirName)
 	for _, file := range files {
 		if err := c.Download(file); err != nil {
 			return err
 		}
 	}
-
+	os.Chdir("..")
 	return nil
 }

@@ -43,6 +43,9 @@ var commands = []*cli.Command{
 			}
 			return saveDetails(client.GetTokens())
 		},
+		BashComplete: func(c *cli.Context) {
+			fmt.Fprintf(c.App.Writer, "--better\n")
+		},
 		// Flags: ,
 	},
 	{
@@ -56,7 +59,7 @@ var commands = []*cli.Command{
 			for _, course := range courses {
 				if course.Title == "Distributed Algorithms" {
 
-					err := client.DownloadCourse(course.Code)
+					err := client.DownloadCourse(course)
 					if err != nil {
 						return err
 					}

@@ -15,9 +15,10 @@ type App struct {
 func NewCLIApp() App {
 	return App{
 		cli.App{
-			Name:     "scientia",
-			Usage:    "Scientia is a command line interface for the Scientia API",
-			Commands: commands,
+			Name:                 "scientia",
+			Usage:                "Scientia is a command line interface for the Scientia API",
+			EnableBashCompletion: true,
+			Commands:             commands,
 			ExitErrHandler: func(c *cli.Context, err error) {
 				if err != nil {
 					log.Error(err)
