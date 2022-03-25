@@ -44,7 +44,7 @@ type LoginTokens struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-//Login - takes the student's shortcode and password to generate an authorisation token
+// Login - takes the student's shortcode and password to generate an authorisation token
 func (c *APIClient) Login(username string, password string) error {
 	details := loginDetails{Username: username, Password: password}
 
@@ -157,7 +157,6 @@ func (c *APIClient) Download(resource Resource) error {
 }
 
 func (c *APIClient) DownloadCourse(course Course) error {
-
 	files, err := c.ListFiles(course.Code)
 	if err != nil {
 		return err

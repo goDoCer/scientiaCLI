@@ -1,18 +1,22 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
-	"scientia-cli/scientia"
 	"syscall"
+
+	"scientia-cli/scientia"
 
 	cli "github.com/urfave/cli/v2"
 	"golang.org/x/term"
 )
 
-var client scientia.APIClient
-var tokenPath string
+var (
+	client    scientia.APIClient
+	tokenPath string
+)
 
 func init() {
 	client = scientia.NewAPIClient()
@@ -31,6 +35,9 @@ var commands = []*cli.Command{
 		Usage: "login to the scientia API",
 		Action: func(c *cli.Context) error {
 			username := c.Args().Get(0)
+			if username == "" {
+				return errors.New("Please enter your shortcode")
+			}
 			fmt.Print("Enter password: ")
 			bytePassword, err := term.ReadPassword(int(syscall.Stdin))
 			if err != nil {
@@ -46,27 +53,31 @@ var commands = []*cli.Command{
 		BashComplete: func(c *cli.Context) {
 			fmt.Fprintf(c.App.Writer, "--better\n")
 		},
-		// Flags: ,
 	},
 	{
 		Name:  "download",
 		Usage: "download a file from scientia",
 		Action: func(c *cli.Context) error {
-
-			// scientia download <course_name>
 			courses := client.GetCourses()
+			courseTitle := c.Args().First()
 
 			for _, course := range courses {
-				if course.Title == "Distributed Algorithms" {
-
+				if course.Title == courseTitle {
 					err := client.DownloadCourse(course)
 					if err != nil {
 						return err
 					}
+					return nil
 				}
 			}
 
-			return nil
+			return errors.New("Course does not exist")
+		},
+		BashComplete: func(c *cli.Context) {
+			courses := client.GetCourses()
+			for _, course := range courses {
+				fmt.Println(course.Title)
+			}
 		},
 	},
 }

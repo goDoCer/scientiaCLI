@@ -7,10 +7,13 @@ sudo chmod -R 777 /usr/local/bin/scientia-cli/token.txt
 
 echo "Scientia installed successfully"
 echo "Scientia is now available in /usr/local/bin/scientia-cli"
-# echo "export PATH=\$PATH:/usr/local/bin/scientia-cli" >> ~/.bashrc
+# echo "export PATH=\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
 
 # UNCOMMENT FOR NORMAL BASH 
 # echo "export PATH=\$PATH:/usr/local/bin/scientia-cli" >> ~/.bashrc
+
+# UNCOMMENT FOR ZSH 
+# echo "export PATH=\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
 
 # UNCOMMENT FOR FISH 
 # set -U fish_user_paths /usr/local/go/bin $fish_user_paths
