@@ -50,9 +50,6 @@ var commands = []*cli.Command{
 			}
 			return saveDetails(client.GetTokens())
 		},
-		BashComplete: func(c *cli.Context) {
-			fmt.Fprintf(c.App.Writer, "--better\n")
-		},
 	},
 	{
 		Name:  "download",

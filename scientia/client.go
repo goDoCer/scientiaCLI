@@ -77,6 +77,7 @@ func (c *APIClient) Login(username string, password string) error {
 	return nil
 }
 
+// GetTokens returns the tokens as a LoginTokenStruct which can marshalled to json
 func (c *APIClient) GetTokens() LoginTokens {
 	return LoginTokens{
 		AccessToken:  c.accessToken,
@@ -84,11 +85,13 @@ func (c *APIClient) GetTokens() LoginTokens {
 	}
 }
 
+// AddTokens adds the tokens to the client
 func (c *APIClient) AddTokens(tokens LoginTokens) {
 	c.accessToken = tokens.AccessToken
 	c.refreshToken = tokens.RefreshToken
 }
 
+// GetCourses fetchs the courses for the current academic year
 func (c *APIClient) GetCourses() []Course {
 	year := getCurrentAcademicYear()
 
@@ -108,6 +111,7 @@ func (c *APIClient) GetCourses() []Course {
 	return courses
 }
 
+// ListFiles returns the list of resources that are files for a course
 func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 	year := getCurrentAcademicYear()
 
@@ -135,6 +139,7 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 	return files, nil
 }
 
+// Download downloads the given resource from the API
 func (c *APIClient) Download(resource Resource) error {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources/%d/file", baseURL, resource.ID), nil)
 	req.Header.Add("Authorization", "Bearer "+c.accessToken)
@@ -157,6 +162,7 @@ func (c *APIClient) Download(resource Resource) error {
 	return os.WriteFile(resource.Title+fileExtension, data, 0o777)
 }
 
+// DownloadCourse downloads all the files for a course
 func (c *APIClient) DownloadCourse(course Course) error {
 	files, err := c.ListFiles(course.Code)
 	if err != nil {
