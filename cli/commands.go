@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"sync"
 	"syscall"
 
 	"scientia-cli/scientia"
 
+	"github.com/schollz/progressbar/v3"
 	cli "github.com/urfave/cli/v2"
 	"golang.org/x/term"
 )
@@ -64,7 +66,7 @@ var commands = []*cli.Command{
 
 			for _, course := range courses {
 				if course.Title == courseTitle {
-					err := client.DownloadCourse(course)
+					err := downloadCourse(course)
 					if err != nil {
 						return err
 					}
@@ -81,4 +83,40 @@ var commands = []*cli.Command{
 			}
 		},
 	},
+}
+
+// downloadCourse downloads all the files for a course
+func downloadCourse(course scientia.Course) error {
+	files, err := client.ListFiles(course.Code)
+	if err != nil {
+		return err
+	}
+	dirName := course.Code + "-" + course.Title
+
+	err = os.Mkdir(dirName, 0777)
+	if err != nil && !errors.Is(err, os.ErrExist) {
+		return err
+	}
+
+	bar := progressbar.Default(int64(len(files)), "Downloading files")
+
+	var wg sync.WaitGroup
+
+	for _, file := range files {
+		wg.Add(1)
+		go func(resource scientia.Resource) {
+			defer wg.Done()
+			data, err := client.Download(resource)
+			if err != nil {
+				fmt.Println(err) //TODO: send this to a channel
+			}
+
+			filepath := path.Join(dirName, resource.Title)
+			err = os.WriteFile(filepath, data, 0777)
+			bar.Add(1)
+		}(file)
+	}
+
+	wg.Wait()
+	return nil
 }

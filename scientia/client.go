@@ -6,12 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"path"
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/schollz/progressbar/v3"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -140,7 +137,7 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 }
 
 // Download downloads the given resource from the API
-func (c *APIClient) Download(resource Resource) error {
+func (c *APIClient) Download(resource Resource) ([]byte, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources/%d/file", baseURL, resource.ID), nil)
 	req.Header.Add("Authorization", "Bearer "+c.accessToken)
 
@@ -153,34 +150,5 @@ func (c *APIClient) Download(resource Resource) error {
 	}
 	defer resp.Body.Close()
 
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	fileExtension := path.Ext(resource.Path)
-	return os.WriteFile(resource.Title+fileExtension, data, 0o777)
-}
-
-// DownloadCourse downloads all the files for a course
-func (c *APIClient) DownloadCourse(course Course) error {
-	files, err := c.ListFiles(course.Code)
-	if err != nil {
-		return err
-	}
-	dirName := course.Code + "-" + course.Title
-	os.Mkdir(dirName, 0o777)
-	os.Chdir(dirName)
-
-	// TODO: This feels disgusting so maybe find a better way to separate concerns
-	bar := progressbar.Default(int64(len(files)), "Downloading files")
-
-	for _, file := range files {
-		if err := c.Download(file); err != nil {
-			return err
-		}
-		bar.Add(1)
-	}
-	os.Chdir("..")
-	return nil
+	return io.ReadAll(resp.Body)
 }
