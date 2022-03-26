@@ -34,6 +34,10 @@ var commands = []*cli.Command{
 		Name:  "login",
 		Usage: "login to the scientia API",
 		Action: func(c *cli.Context) error {
+			if c.NArg() < 1 {
+				return errors.New("missing shortcode")
+			}
+
 			username := c.Args().Get(0)
 			if username == "" {
 				return errors.New("Please enter your shortcode")
