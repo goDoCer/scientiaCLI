@@ -25,7 +25,7 @@ type APIClient struct {
 func NewAPIClient() APIClient {
 	return APIClient{
 		Client: http.Client{
-			Timeout: time.Second * 10,
+			Timeout: time.Second * 100,
 		},
 		baseURL: "https://api-materials.doc.ic.ac.uk/",
 	}

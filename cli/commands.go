@@ -63,20 +63,32 @@ var commands = []*cli.Command{
 		Action: func(c *cli.Context) error {
 			courseTitle := c.Args().First()
 			courses := client.GetCourses()
+			found := false
+
+			var wg sync.WaitGroup
 
 			for _, course := range courses {
-				if course.Title == courseTitle {
-					err := downloadCourse(course)
-					if err != nil {
-						return err
-					}
-					return nil
+				if course.Title == courseTitle || courseTitle == "all" {
+					wg.Add(1)
+					go func(course scientia.Course) {
+						defer wg.Done()
+						err := downloadCourse(course)
+						if err != nil {
+							fmt.Println(err) //TODO: send this to a channel
+						}
+					}(course)
+					found = true
 				}
 			}
 
-			return errors.New("Course does not exist")
+			wg.Wait()
+			if !found {
+				return errors.New("Course does not exist")
+			}
+			return nil
 		},
 		BashComplete: func(c *cli.Context) {
+			fmt.Println("all")
 			courses := client.GetCourses()
 			for _, course := range courses {
 				fmt.Println(course.Title)
@@ -120,3 +132,34 @@ func downloadCourse(course scientia.Course) error {
 	wg.Wait()
 	return nil
 }
+
+//Sad times for this abstraction
+// func pFor[T any](tasks []T, function func(task T) []error) []error {
+
+// 	errChannel := make(chan error, 10)
+// 	var wg sync.WaitGroup
+
+// 	for _, task := range tasks {
+// 		wg.Add(1)
+// 		go func(task T) {
+// 			defer wg.Done()
+// 			for _, err := range function(task) {
+// 				if err != nil {
+// 					errChannel <- err
+// 				}
+// 			}
+// 		}(task)
+// 	}
+
+// 	go func(errChannel chan error) {
+// 		wg.Wait()
+// 		close(errChannel)
+// 	}(errChannel)
+
+// 	allErrors := make([]error, 0)
+// 	for err := range errChannel {
+// 		allErrors = append(allErrors, err)
+// 	}
+
+// 	return allErrors
+// }
