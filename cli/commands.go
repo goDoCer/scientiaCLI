@@ -59,8 +59,8 @@ var commands = []*cli.Command{
 		Name:  "download",
 		Usage: "download a file from scientia",
 		Action: func(c *cli.Context) error {
-			courses := client.GetCourses()
 			courseTitle := c.Args().First()
+			courses := client.GetCourses()
 
 			for _, course := range courses {
 				if course.Title == courseTitle {
