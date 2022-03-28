@@ -10,8 +10,8 @@ type config struct {
 	SaveDir string `json:"saveDir"`
 }
 
-// ReadConfig reads the filepath and returns a Config
-func readConfig(filepath string) (config, error) {
+// loadConfig reads the filepath and returns a Config
+func loadConfig(filepath string) (config, error) {
 	file, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return config{}, err
@@ -26,8 +26,8 @@ func readConfig(filepath string) (config, error) {
 	return cfg, nil
 }
 
-// SaveConfig writes the Config to the filepath
-func (cfg config) saveConfig(filepath string) error {
+// save writes the Config to the filepath
+func (cfg config) save(filepath string) error {
 	file, err := json.Marshal(cfg)
 	if err != nil {
 		return err

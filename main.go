@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-
 	app := cli.NewCLIApp()
 	app.Run(os.Args)
 }

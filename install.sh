@@ -6,6 +6,7 @@ sudo touch /usr/local/bin/scientia-cli/token.txt
 sudo chmod -R 777 /usr/local/bin/scientia-cli/token.txt
 
 sudo cp ./default-config.json /usr/local/bin/scientia-cli/config.json
+sudo chmod -R 777 /usr/local/bin/scientia-cli/config.json
 
 sudo cp autocomplete.sh /etc/bash_completion.d/scientia-cli
 sudo chmod +x /etc/bash_completion.d/scientia-cli

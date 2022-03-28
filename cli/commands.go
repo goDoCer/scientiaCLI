@@ -18,9 +18,10 @@ import (
 )
 
 var (
-	client    scientia.APIClient
-	tokenPath string
-	cfg       config
+	client     scientia.APIClient
+	tokenPath  string
+	cfg        config
+	configPath string
 )
 
 func init() {
@@ -36,12 +37,11 @@ func init() {
 	client.AddTokens(*loginDetails)
 
 	// redaing the config from the executable's directory
-	configPath := path.Dir(filepath) + "/config.json"
-	cfg, err = readConfig(configPath)
+	configPath = path.Dir(filepath) + "/config.json"
+	cfg, err = loadConfig(configPath)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("CONFIG SAVE DIR", cfg.SaveDir)
 }
 
 var commands = []*cli.Command{
@@ -106,6 +106,27 @@ var commands = []*cli.Command{
 			for _, course := range courses {
 				fmt.Println(course.Title)
 			}
+		},
+	},
+	{
+		Name:  "save-dir",
+		Usage: "set the directory to save downloaded files",
+		Action: func(c *cli.Context) error {
+			dir := c.Args().First()
+			if dir == "" {
+				return errors.New("Please enter a directory")
+			}
+			cfg.SaveDir = dir
+			logrus.Info("Save directory set to ", cfg.SaveDir)
+			return cfg.save(configPath)
+		},
+	},
+	{
+		Name:  "config",
+		Usage: "view the CLI configuration",
+		Action: func(c *cli.Context) error {
+			fmt.Println("Your save directory is set to:", cfg.SaveDir)
+			return nil
 		},
 	},
 }
