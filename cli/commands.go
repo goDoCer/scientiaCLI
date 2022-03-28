@@ -17,30 +17,6 @@ import (
 	"golang.org/x/term"
 )
 
-var (
-	client     scientia.APIClient
-	cfg        config
-	configPath string
-)
-
-func init() {
-	client = scientia.NewAPIClient()
-
-	filepath, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-
-	// reading the config from the executable's directory
-	configPath = path.Dir(filepath) + "/config.json"
-	cfg, err = loadConfig(configPath)
-	if err != nil {
-		panic(err)
-	}
-	tokens := cfg.tokens()
-	client.AddTokens(tokens)
-}
-
 var commands = []*cli.Command{
 	{
 		Name:  "login",
@@ -87,7 +63,8 @@ var commands = []*cli.Command{
 			for _, course := range courses {
 				if (course.Title == courseTitle || courseTitle == "all") && course.HasMaterials {
 					wg.Add(1)
-					go func(course scientia.Course) {
+					// TODO add go keyword
+					func(course scientia.Course) {
 						defer wg.Done()
 						err := downloadCourse(course)
 						if err != nil {

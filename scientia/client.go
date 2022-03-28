@@ -89,25 +89,57 @@ func (c *APIClient) AddTokens(tokens LoginTokens) {
 	c.refreshToken = tokens.RefreshToken
 }
 
+// Do tries to make a request using the auth token
+// if the request fails because the auth token has expired
+//  it uses the refresh token to get a new auth token and make the request again
+func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
+	req.Header.Set("Authorization", "Bearer "+c.accessToken)
+	resp, err := c.Client.Do(req)
+
+	// token has not expired
+	if resp.StatusCode == http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
+		return resp, err
+	}
+
+	refreshReq, _ := http.NewRequest("POST", baseURL+"auth/refresh", nil)
+
+	refreshReq.Header.Add("Authorization", "Bearer "+c.refreshToken)
+	refreshResp, err := c.Client.Do(refreshReq)
+	if err != nil {
+		return nil, errors.Wrap(err, "Couldn't refresh access token")
+	}
+
+	var refreshResponse LoginTokens
+	err = json.NewDecoder(refreshResp.Body).Decode(&refreshResponse)
+	if err != nil {
+		return nil, errors.Wrap(err, "Couldn't decode refresh token response")
+	}
+
+	c.accessToken = refreshResponse.AccessToken
+	req.Header.Set("Authorization", "Bearer "+c.accessToken)
+	return c.Client.Do(req)
+}
+
 // GetCourses fetchs the courses for the current academic year
 func (c *APIClient) GetCourses() ([]Course, error) {
 	year := getCurrentAcademicYear()
 
 	req, err := http.NewRequest("GET", baseURL+"courses/"+year, nil)
-	req.Header.Add("Authorization", "Bearer "+c.accessToken)
 
 	if err != nil {
 		panic(err)
 	}
 	resp, err := c.Do(req)
+
 	if err != nil {
-		// TODO? should this be a panic? what if we used an expired token?
-		panic(err)
+		return nil, err
 	}
 
 	var courses []Course
 	err = json.NewDecoder(resp.Body).Decode(&courses)
 	if err != nil {
+		fmt.Println(err)
+		fmt.Println(resp)
 		return nil, errors.New("Error fetching your courses from scientia, have you logged in?")
 	}
 	return courses, err
@@ -118,7 +150,6 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 	year := getCurrentAcademicYear()
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources?year=%s&course=%s", baseURL, year, courseCode), nil)
-	req.Header.Add("Authorization", "Bearer "+c.accessToken)
 
 	if err != nil {
 		panic(err)
@@ -149,7 +180,6 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 // Download downloads the given resource from the API
 func (c *APIClient) Download(resource Resource) ([]byte, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources/%d/file", baseURL, resource.ID), nil)
-	req.Header.Add("Authorization", "Bearer "+c.accessToken)
 
 	if err != nil {
 		panic(err)
