@@ -101,6 +101,7 @@ func (c *APIClient) GetCourses() ([]Course, error) {
 	}
 	resp, err := c.Do(req)
 	if err != nil {
+		// TODO? should this be a panic? what if we used an expired token?
 		panic(err)
 	}
 
