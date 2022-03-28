@@ -90,7 +90,7 @@ func (c *APIClient) AddTokens(tokens LoginTokens) {
 }
 
 // GetCourses fetchs the courses for the current academic year
-func (c *APIClient) GetCourses() []Course {
+func (c *APIClient) GetCourses() ([]Course, error) {
 	year := getCurrentAcademicYear()
 
 	req, err := http.NewRequest("GET", baseURL+"courses/"+year, nil)
@@ -106,7 +106,10 @@ func (c *APIClient) GetCourses() []Course {
 
 	var courses []Course
 	err = json.NewDecoder(resp.Body).Decode(&courses)
-	return courses
+	if err != nil {
+		return nil, errors.New("Error fetching your courses from scientia, have you logged in?")
+	}
+	return courses, err
 }
 
 // ListFiles returns the list of resources that are files for a course

@@ -77,13 +77,16 @@ var commands = []*cli.Command{
 		Usage: "download a file from scientia",
 		Action: func(c *cli.Context) error {
 			courseTitle := c.Args().First()
-			courses := client.GetCourses()
+			courses, err := client.GetCourses()
+			if err != nil {
+				return err
+			}
 			found := false
 
 			var wg sync.WaitGroup
 
 			for _, course := range courses {
-				if course.Title == courseTitle || courseTitle == "all" {
+				if (course.Title == courseTitle || courseTitle == "all") && course.HasMaterials {
 					wg.Add(1)
 					go func(course scientia.Course) {
 						defer wg.Done()
@@ -104,7 +107,7 @@ var commands = []*cli.Command{
 		},
 		BashComplete: func(c *cli.Context) {
 			fmt.Println("all")
-			courses := client.GetCourses()
+			courses, _ := client.GetCourses()
 			for _, course := range courses {
 				fmt.Println(course.Title)
 			}
