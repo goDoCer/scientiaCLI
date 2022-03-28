@@ -139,13 +139,14 @@ var commands = []*cli.Command{
 func downloadCourse(course scientia.Course) error {
 	files, err := client.ListFiles(course.Code)
 	if len(files) == 0 {
+		logrus.Info("No files to download for course ", course.FullName())
 		return nil
 	}
 
 	if err != nil {
 		return err
 	}
-	dirName := course.Code + "-" + course.Title
+	dirName := course.FullName()
 	saveDir := path.Join(cfg.SaveDir, dirName)
 	err = os.Mkdir(saveDir, 0777)
 

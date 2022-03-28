@@ -7,6 +7,10 @@ type Course struct {
 	HasMaterials bool   `json:"has_materials"`
 }
 
+func (c Course) FullName() string {
+	return c.Title + " - " + c.Code
+}
+
 type Resource struct {
 	ID           int           `json:"id"`
 	Downloads    int           `json:"downloads"`
