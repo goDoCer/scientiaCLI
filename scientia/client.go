@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
+	"path"
 	"time"
 
 	"github.com/pkg/errors"
@@ -134,9 +134,9 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 	files := make([]Resource, 0)
 	for _, resource := range resources {
 		if resource.Type == "file" {
-			// TODO: HACKY - we dont actually know if it should be a pdf but it is more often than not a pdf
-			if !strings.HasSuffix(resource.Title, ".pdf") {
-				resource.Title = resource.Title + ".pdf"
+			ext := path.Ext(resource.Title)
+			if ext == "" {
+				resource.Title = resource.Title + "." + path.Ext(resource.Path)
 			}
 
 			files = append(files, resource)
