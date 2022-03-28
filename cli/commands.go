@@ -138,6 +138,10 @@ var commands = []*cli.Command{
 // downloadCourse downloads all the files for a course
 func downloadCourse(course scientia.Course) error {
 	files, err := client.ListFiles(course.Code)
+	if len(files) == 0 {
+		return nil
+	}
+
 	if err != nil {
 		return err
 	}
