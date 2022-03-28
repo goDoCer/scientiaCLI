@@ -63,8 +63,7 @@ var commands = []*cli.Command{
 			for _, course := range courses {
 				if (course.Title == courseTitle || courseTitle == "all") && course.HasMaterials {
 					wg.Add(1)
-					// TODO add go keyword
-					func(course scientia.Course) {
+					go func(course scientia.Course) {
 						defer wg.Done()
 						err := downloadCourse(course)
 						if err != nil {
@@ -106,7 +105,9 @@ var commands = []*cli.Command{
 		Name:  "config",
 		Usage: "view the CLI configuration",
 		Action: func(c *cli.Context) error {
-			fmt.Println("Your save directory is set to:", cfg.SaveDir)
+			fmt.Println("Save directory: ", cfg.SaveDir)
+			fmt.Println("Access token: ", cfg.AccessToken)
+			fmt.Println("Refresh token: ", cfg.RefreshToken)
 			return nil
 		},
 	},
