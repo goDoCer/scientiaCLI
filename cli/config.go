@@ -3,11 +3,14 @@ package cli
 import (
 	"encoding/json"
 	"io/ioutil"
+	"scientia-cli/scientia"
 )
 
 // config is used to configure App
 type config struct {
-	SaveDir string `json:"saveDir"`
+	SaveDir      string `json:"saveDir"`
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refresToken"`
 }
 
 // loadConfig reads the filepath and returns a Config
@@ -39,4 +42,16 @@ func (cfg config) save(filepath string) error {
 	}
 
 	return nil
+}
+
+func (cfg *config) tokens() scientia.LoginTokens {
+	return scientia.LoginTokens{
+		AccessToken:  cfg.AccessToken,
+		RefreshToken: cfg.RefreshToken,
+	}
+}
+
+func (cfg *config) updateTokens(tokens scientia.LoginTokens) {
+	cfg.AccessToken = tokens.AccessToken
+	cfg.RefreshToken = tokens.RefreshToken
 }

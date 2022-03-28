@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	client     scientia.APIClient
-	tokenPath  string
+	client scientia.APIClient
+	// tokenPath  string
 	cfg        config
 	configPath string
 )
@@ -31,17 +31,15 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	// reading the access and refresh tokens from the executable's directory
-	tokenPath = path.Dir(filepath) + "/token.txt"
-	loginDetails, _ := loadDetails()
-	client.AddTokens(*loginDetails)
 
-	// redaing the config from the executable's directory
+	// reading the config from the executable's directory
 	configPath = path.Dir(filepath) + "/config.json"
 	cfg, err = loadConfig(configPath)
 	if err != nil {
 		panic(err)
 	}
+	tokens := cfg.tokens()
+	client.AddTokens(tokens)
 }
 
 var commands = []*cli.Command{
@@ -67,7 +65,11 @@ var commands = []*cli.Command{
 			if err != nil {
 				return err
 			}
-			return saveDetails(client.GetTokens())
+
+			cfg.updateTokens(client.GetTokens())
+			cfg.save(configPath)
+
+			return nil
 		},
 	},
 	{

@@ -1,3 +1,5 @@
 {
-  "saveDir": "."
+  "saveDir": ".",
+  "accessToken": "",
+  "refreshToken": ""
 }
