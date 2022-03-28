@@ -138,8 +138,6 @@ func (c *APIClient) GetCourses() ([]Course, error) {
 	var courses []Course
 	err = json.NewDecoder(resp.Body).Decode(&courses)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println(resp)
 		return nil, errors.New("Error fetching your courses from scientia, have you logged in?")
 	}
 	return courses, err
