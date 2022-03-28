@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -129,6 +130,11 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 	files := make([]Resource, 0)
 	for _, resource := range resources {
 		if resource.Type == "file" {
+			// TODO: HACKY - we dont actually know if it should be a pdf but it is more often than not a pdf
+			if !strings.HasSuffix(resource.Title, ".pdf") {
+				resource.Title = resource.Title + ".pdf"
+			}
+
 			files = append(files, resource)
 		}
 	}
