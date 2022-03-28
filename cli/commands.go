@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -9,6 +8,9 @@ import (
 	"syscall"
 
 	"scientia-cli/scientia"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 
 	"github.com/schollz/progressbar/v3"
 	cli "github.com/urfave/cli/v2"
@@ -18,17 +20,28 @@ import (
 var (
 	client    scientia.APIClient
 	tokenPath string
+	cfg       config
 )
 
 func init() {
 	client = scientia.NewAPIClient()
+
 	filepath, err := os.Executable()
 	if err != nil {
 		panic(err)
 	}
+	// reading the access and refresh tokens from the executable's directory
 	tokenPath = path.Dir(filepath) + "/token.txt"
 	loginDetails, _ := loadDetails()
 	client.AddTokens(*loginDetails)
+
+	// redaing the config from the executable's directory
+	configPath := path.Dir(filepath) + "/config.json"
+	cfg, err = readConfig(configPath)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("CONFIG SAVE DIR", cfg.SaveDir)
 }
 
 var commands = []*cli.Command{
@@ -104,10 +117,22 @@ func downloadCourse(course scientia.Course) error {
 		return err
 	}
 	dirName := course.Code + "-" + course.Title
+	saveDir := path.Join(cfg.SaveDir, dirName)
+	err = os.Mkdir(saveDir, 0777)
 
-	err = os.Mkdir(dirName, 0777)
 	if err != nil && !errors.Is(err, os.ErrExist) {
-		return err
+		if errors.Is(err, os.ErrNotExist) {
+			logrus.Warnf("Directory %s does not exist", saveDir)
+			logrus.Println("Trying to create directory", saveDir)
+			err = os.Mkdir(cfg.SaveDir, 0777)
+			if err != nil {
+				logrus.Fatal("Could not create directory", saveDir)
+				return err
+			}
+			os.Mkdir(saveDir, 0777)
+		} else {
+			return err
+		}
 	}
 
 	bar := progressbar.Default(int64(len(files)), "Downloading files")
@@ -123,7 +148,8 @@ func downloadCourse(course scientia.Course) error {
 				fmt.Println(err) //TODO: send this to a channel
 			}
 
-			filepath := path.Join(dirName, resource.Title)
+			filepath := path.Join(saveDir, resource.Title)
+
 			err = os.WriteFile(filepath, data, 0777)
 			bar.Add(1)
 		}(file)

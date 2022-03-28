@@ -5,35 +5,35 @@ import (
 	"io/ioutil"
 )
 
-// Config is used to configure App
-type Config struct {
+// config is used to configure App
+type config struct {
 	SaveDir string `json:"saveDir"`
 }
 
 // ReadConfig reads the filepath and returns a Config
-func ReadConfig(filepath string) (Config, error) {
+func readConfig(filepath string) (config, error) {
 	file, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return Config{}, err
+		return config{}, err
 	}
 
-	var config Config
-	err = json.Unmarshal(file, &config)
+	var cfg config
+	err = json.Unmarshal(file, &cfg)
 	if err != nil {
-		return Config{}, err
+		return config{}, err
 	}
 
-	return config, nil
+	return cfg, nil
 }
 
 // SaveConfig writes the Config to the filepath
-func (c Config) SaveConfig(filepath string) error {
-	file, err := json.Marshal(c)
+func (cfg config) saveConfig(filepath string) error {
+	file, err := json.Marshal(cfg)
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(filepath, file, 0644)
+	err = ioutil.WriteFile(filepath, file, 0777)
 	if err != nil {
 		return err
 	}

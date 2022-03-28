@@ -8,11 +8,10 @@ import (
 // App is the main entry point for the CLI
 type App struct {
 	cli.App
-	config Config
 }
 
 // NewCLIApp creates a new instance of CLIApp
-func NewCLIApp(config Config) App {
+func NewCLIApp() App {
 	return App{
 		App: cli.App{
 			Name:                 "scientia",
@@ -25,6 +24,5 @@ func NewCLIApp(config Config) App {
 				}
 			},
 		},
-		config: config,
 	}
 }
