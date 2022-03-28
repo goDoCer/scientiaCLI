@@ -18,8 +18,7 @@ import (
 )
 
 var (
-	client scientia.APIClient
-	// tokenPath  string
+	client     scientia.APIClient
 	cfg        config
 	configPath string
 )
