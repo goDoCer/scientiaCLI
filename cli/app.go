@@ -8,13 +8,13 @@ import (
 // App is the main entry point for the CLI
 type App struct {
 	cli.App
-	// apiClient
+	config Config
 }
 
 // NewCLIApp creates a new instance of CLIApp
-func NewCLIApp() App {
+func NewCLIApp(config Config) App {
 	return App{
-		cli.App{
+		App: cli.App{
 			Name:                 "scientia",
 			Usage:                "Scientia is a command line interface for the Scientia API",
 			EnableBashCompletion: true,
@@ -25,5 +25,6 @@ func NewCLIApp() App {
 				}
 			},
 		},
+		config: config,
 	}
 }
