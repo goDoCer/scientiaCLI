@@ -3,7 +3,8 @@ package cli
 import (
 	"encoding/json"
 	"io/ioutil"
-	"scientia-cli/scientia"
+
+	"github.com/goDoCer/scientiaCLI/scientia"
 )
 
 // config is used to configure App

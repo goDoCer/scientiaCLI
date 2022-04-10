@@ -3,7 +3,9 @@ package cli
 import (
 	"os"
 	"path"
-	"scientia-cli/scientia"
+
+	"github.com/goDoCer/scientiaCLI/logging"
+	"github.com/goDoCer/scientiaCLI/scientia"
 
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
@@ -13,6 +15,7 @@ var (
 	client     scientia.APIClient
 	cfg        config
 	configPath string
+	verbose    bool
 )
 
 // App is the main entry point for the CLI
@@ -33,6 +36,17 @@ func NewCLIApp() App {
 					log.Error(err)
 				}
 			},
+
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name:        "verbose",
+					Aliases:     []string{"v"},
+					Usage:       "Enable logging",
+					Value:       false,
+					Destination: &verbose,
+				},
+			},
+
 			Before: func(ctx *cli.Context) error {
 				client = scientia.NewAPIClient()
 
@@ -50,11 +64,17 @@ func NewCLIApp() App {
 				tokens := cfg.tokens()
 				client.AddTokens(tokens)
 
+				log.SetOutput(logging.L)
+
 				return nil
 			},
 			After: func(ctx *cli.Context) error {
 				tokens := client.GetTokens()
 				cfg.updateTokens(tokens)
+
+				if verbose {
+					logging.L.Print()
+				}
 				return nil
 			},
 		},

@@ -7,10 +7,10 @@ import (
 	"sync"
 	"syscall"
 
-	"scientia-cli/scientia"
+	"github.com/goDoCer/scientiaCLI/scientia"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/schollz/progressbar/v3"
 	cli "github.com/urfave/cli/v2"
@@ -26,12 +26,12 @@ var commands = []*cli.Command{
 			var shortcode string
 
 			if c.NArg() < 1 {
-				logrus.Warn("No shortcode provided")
+				log.Warn("No shortcode provided")
 				fmt.Print("Please enter your shortcode: ")
 				fmt.Scanln(&shortcode)
 			} else {
 				shortcode = c.Args().First()
-				logrus.Infof("shortcode: %s", shortcode)
+				log.Infof("shortcode: %s", shortcode)
 			}
 
 			if shortcode == "" {
@@ -105,7 +105,7 @@ var commands = []*cli.Command{
 				return errors.New("Please enter a directory")
 			}
 			cfg.SaveDir = dir
-			logrus.Info("Save directory set to ", cfg.SaveDir)
+			log.Info("Save directory set to ", cfg.SaveDir)
 			return cfg.save(configPath)
 		},
 	},
@@ -125,7 +125,7 @@ var commands = []*cli.Command{
 func downloadCourse(course scientia.Course) error {
 	files, err := client.ListFiles(course.Code)
 	if len(files) == 0 {
-		logrus.Info("No files to download for course ", course.FullName())
+		log.Info("No files to download for course ", course.FullName())
 		return nil
 	}
 
@@ -138,11 +138,11 @@ func downloadCourse(course scientia.Course) error {
 
 	if err != nil && !errors.Is(err, os.ErrExist) {
 		if errors.Is(err, os.ErrNotExist) {
-			logrus.Warnf("Directory %s does not exist", saveDir)
-			logrus.Println("Trying to create directory", saveDir)
+			log.Warnf("Directory %s does not exist", saveDir)
+			log.Println("Trying to create directory", saveDir)
 			err = os.Mkdir(cfg.SaveDir, 0777)
 			if err != nil {
-				logrus.Fatal("Could not create directory", saveDir)
+				log.Fatal("Could not create directory", saveDir)
 				return err
 			}
 			os.Mkdir(saveDir, 0777)
@@ -166,7 +166,7 @@ func downloadCourse(course scientia.Course) error {
 			if err == nil {
 				scientiaLastModified, err := client.GetFileLastModified(resource.ID)
 				if err != nil || scientiaLastModified.After(fileInfo.ModTime()) {
-					logrus.Warnf("skipping download for file %s because it has not been updated", resource.Title)
+					log.Warnf("skipping download for file %s because it has not been updated", resource.Title)
 					return
 				}
 			}
