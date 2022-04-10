@@ -42,7 +42,7 @@ func NewCLIApp() App {
 				}
 
 				// reading the config from the executable's directory
-				configPath = path.Dir(filepath) + "/config.json"
+				configPath = path.Join(path.Dir(filepath), "config.json")
 				cfg, err = loadConfig(configPath)
 				if err != nil {
 					return err

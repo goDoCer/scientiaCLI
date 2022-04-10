@@ -175,9 +175,24 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 	return files, nil
 }
 
+//GetFileLastModified returns the last time the resource was modified on the server
+func (c *APIClient) GetFileLastModified(resourceID int) (time.Time, error) {
+	req, err := http.NewRequest("HEAD", fmt.Sprintf("%sresources/%d/file", baseURL, resourceID), nil)
+	if err != nil {
+		return time.Now(), err
+	}
+
+	lastModified := req.Header.Get("last-modified")
+	if lastModified == "" {
+		return time.Now(), errors.New("Couldn't get last modified header")
+	}
+
+	return time.Parse(time.RFC1123, lastModified)
+}
+
 // Download downloads the given resource from the API
-func (c *APIClient) Download(resource Resource) ([]byte, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources/%d/file", baseURL, resource.ID), nil)
+func (c *APIClient) Download(resourceID int) ([]byte, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources/%d/file", baseURL, resourceID), nil)
 
 	if err != nil {
 		panic(err)

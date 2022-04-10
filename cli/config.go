@@ -10,7 +10,7 @@ import (
 type config struct {
 	SaveDir      string `json:"saveDir"`
 	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refresToken"`
+	RefreshToken string `json:"refreshToken"`
 }
 
 // loadConfig reads the filepath and returns a Config

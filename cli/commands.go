@@ -159,15 +159,23 @@ func downloadCourse(course scientia.Course) error {
 		wg.Add(1)
 		go func(resource scientia.Resource) {
 			defer wg.Done()
-			data, err := client.Download(resource)
+			defer bar.Add(1)
+			filepath := path.Join(saveDir, resource.Title)
+
+			fileInfo, err := os.Stat(filepath)
+			if err == nil {
+				scientiaLastModified, err := client.GetFileLastModified(resource.ID)
+				if err != nil || scientiaLastModified.After(fileInfo.ModTime()) {
+					logrus.Warnf("skipping download for file %s because it has not been updated", resource.Title)
+					return
+				}
+			}
+			data, err := client.Download(resource.ID)
 			if err != nil {
 				fmt.Println(err) //TODO: send this to a channel
 			}
 
-			filepath := path.Join(saveDir, resource.Title)
-
 			err = os.WriteFile(filepath, data, 0777)
-			bar.Add(1)
 		}(file)
 	}
 
