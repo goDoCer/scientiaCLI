@@ -19,24 +19,32 @@ import (
 
 var commands = []*cli.Command{
 	{
-		Name:  "login",
-		Usage: "login to the scientia API",
+		Name:      "login",
+		Usage:     "login to the scientia API",
+		ArgsUsage: "shortcode",
 		Action: func(c *cli.Context) error {
+			var shortcode string
+
 			if c.NArg() < 1 {
-				return errors.New("missing shortcode")
+				logrus.Warn("No shortcode provided")
+				fmt.Print("Please enter your shortcode: ")
+				fmt.Scanln(&shortcode)
+			} else {
+				shortcode = c.Args().First()
+				logrus.Infof("shortcode: %s", shortcode)
 			}
 
-			username := c.Args().Get(0)
-			if username == "" {
+			if shortcode == "" {
 				return errors.New("Please enter your shortcode")
 			}
-			fmt.Print("Enter password: ")
+
+			fmt.Print("Enter password (It will be hidden): ")
 			bytePassword, err := term.ReadPassword(int(syscall.Stdin))
 			if err != nil {
 				return err
 			}
 			password := string(bytePassword)
-			err = client.Login(username, password)
+			err = client.Login(shortcode, password)
 			if err != nil {
 				return err
 			}
