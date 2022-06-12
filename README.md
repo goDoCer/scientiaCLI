@@ -8,7 +8,10 @@ Right now we only support automatic Linux installation, but the code should work
 
 ### Linux
 
-Clone this repo and run `sh install.sh`
+1. Make sure you have go installed ([instructions](https://go.dev/doc/install))
+2. Clone this repository: `git clone git@github.com:goDoCer/scientiaCLI.git`
+3. Run the installer script in the root of the repo: `cd scientiaCLI && sh install.sh`
+4. Feel free to remove the repository: `rm -rf scientiaCLI` 
 
 ### Windows/MacOS
 
