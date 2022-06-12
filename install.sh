@@ -1,30 +1,30 @@
-go build
-sudo mkdir -p /usr/local/bin/scientiaCLI
-sudo mv scientiaCLI /usr/local/bin/scientiaCLI/
+#!/bin/bash
+set -e
+go build -o scientia-cli
+sudo mkdir -p /usr/local/bin/scientia-cli
+sudo mv scientia-cli /usr/local/bin/scientia-cli/
 
-sudo touch /usr/local/bin/scientiaCLI/token.txt  
-sudo chmod -R 777 /usr/local/bin/scientiaCLI/token.txt
+sudo touch /usr/local/bin/scientia-cli/token.txt  
+sudo chmod -R 777 /usr/local/bin/scientia-cli/token.txt
 
-sudo cp ./default-config.json /usr/local/bin/scientiaCLI/config.json
-sudo chmod -R 777 /usr/local/bin/scientiaCLI/config.json
+sudo cp ./default-config.json /usr/local/bin/scientia-cli/config.json
+sudo chmod -R 777 /usr/local/bin/scientia-cli/config.json
+set +e
 
-sudo cp autocomplete.sh /etc/bash_completion.d/scientiaCLI
-sudo chmod +x /etc/bash_completion.d/scientiaCLI
+cat << EndOfMessage
+======================================================================================================
+Add scientia-cli to your path. You can do so by running the command depending upon which shell you use
 
-# NOT SURE IF WE NEED THIS?
-# echo "[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion" >> ~/.bashrc
+# BASH
+echo "export PATH=\$PATH:/usr/local/bin/scientia-cli" >> ~/.bashrc
+
+# ZSH 
+echo "export PATH=\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
+
+# FISH 
+set -U fish_user_paths /usr/local/go/bin \$fish_user_paths
+======================================================================================================
+EndOfMessage
 
 echo "Scientia installed successfully"
-echo "Scientia is now available in /usr/local/bin/scientiaCLI"
-# echo "export PATH=\$PATH:/usr/local/bin/scientiaCLI" >> ~/.zshrc
-
-# UNCOMMENT FOR NORMAL BASH 
-# echo "export PATH=\$PATH:/usr/local/bin/scientiaCLI" >> ~/.bashrc
-
-# UNCOMMENT FOR ZSH 
-# echo "export PATH=\$PATH:/usr/local/bin/scientiaCLI" >> ~/.zshrc
-
-# UNCOMMENT FOR FISH 
-# set -U fish_user_paths /usr/local/go/bin $fish_user_paths
-
-# sudo wget -O /etc/bash_completion.d/scientiaCLI https://raw.githubusercontent.com/urfave/cli/master/autocomplete/bash_autocomplete && sudo chmod +x /etc/bash_completion.d/scientiaCLI
+echo "Scientia is now available in /usr/local/bin/scientia-cli"
