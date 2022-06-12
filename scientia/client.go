@@ -2,6 +2,7 @@ package scientia
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -95,9 +96,8 @@ func (c *APIClient) AddTokens(tokens LoginTokens) {
 func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Set("Authorization", "Bearer "+c.accessToken)
 	resp, err := c.Client.Do(req)
-
 	// token has not expired
-	if resp.StatusCode == http.StatusOK && resp.StatusCode != http.StatusUnauthorized {
+	if err != nil || (resp.StatusCode == http.StatusOK && resp.StatusCode != http.StatusUnauthorized) {
 		return resp, err
 	}
 
@@ -191,9 +191,8 @@ func (c *APIClient) GetFileLastModified(resourceID int) (time.Time, error) {
 }
 
 // Download downloads the given resource from the API
-func (c *APIClient) Download(resourceID int) ([]byte, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources/%d/file", baseURL, resourceID), nil)
-
+func (c *APIClient) Download(ctx context.Context, resourceID int) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%sresources/%d/file", baseURL, resourceID), nil)
 	if err != nil {
 		panic(err)
 	}

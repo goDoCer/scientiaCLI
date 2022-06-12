@@ -1,11 +1,13 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/goDoCer/scientiaCLI/scientia"
 
@@ -170,7 +172,10 @@ func downloadCourse(course scientia.Course) error {
 					return
 				}
 			}
-			data, err := client.Download(resource.ID)
+
+			downloadCtx, cancel := context.WithTimeout(context.Background(), time.Minute*2)
+			defer cancel()
+			data, err := client.Download(downloadCtx, resource.ID)
 			if err != nil {
 				fmt.Println(err) //TODO: send this to a channel
 			}
