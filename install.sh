@@ -16,10 +16,10 @@ cat << EndOfMessage
 Add scientia-cli to your path. You can do so by running the command depending upon which shell you use
 
 # BASH
-echo "export PATH=\$PATH:/usr/local/bin/scientia-cli" >> ~/.bashrc
+echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.bashrc
 
 # ZSH 
-echo "export PATH=\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
+echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
 
 # FISH 
 set -U fish_user_paths /usr/local/go/bin \$fish_user_paths
