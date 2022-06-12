@@ -45,11 +45,11 @@ func (cfg config) save(filepath string) error {
 	return nil
 }
 
-func (cfg *config) tokens() (scientia.LoginTokens, bool) {
+func (cfg *config) tokens() scientia.LoginTokens {
 	return scientia.LoginTokens{
 		AccessToken:  cfg.AccessToken,
 		RefreshToken: cfg.RefreshToken,
-	}, cfg.AccessToken != ""
+	}
 }
 
 func (cfg *config) updateTokens(tokens scientia.LoginTokens) {

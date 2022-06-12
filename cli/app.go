@@ -4,9 +4,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/goDoCer/scientiaCLI/logging"
 	"github.com/goDoCer/scientiaCLI/scientia"
-	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
@@ -16,9 +14,6 @@ var (
 	client     scientia.APIClient
 	cfg        config
 	configPath string
-	verbose    bool
-
-	errNotLoggedIn = errors.New("not logged in, login using the login command")
 )
 
 // App is the main entry point for the CLI
@@ -40,16 +35,6 @@ func NewCLIApp() App {
 				}
 			},
 
-			Flags: []cli.Flag{
-				&cli.BoolFlag{
-					Name:        "verbose",
-					Aliases:     []string{"v"},
-					Usage:       "Enable logging",
-					Value:       false,
-					Destination: &verbose,
-				},
-			},
-
 			Before: func(ctx *cli.Context) error {
 				client = scientia.NewAPIClient()
 
@@ -64,14 +49,10 @@ func NewCLIApp() App {
 				if err != nil {
 					return err
 				}
-				tokens, found := cfg.tokens()
-				if !found {
-					return errNotLoggedIn
-				}
+
+				tokens := cfg.tokens()
 
 				client.AddTokens(tokens)
-
-				log.SetOutput(logging.L)
 
 				return nil
 			},
@@ -79,9 +60,6 @@ func NewCLIApp() App {
 				tokens := client.GetTokens()
 				cfg.updateTokens(tokens)
 
-				if verbose {
-					logging.L.Print()
-				}
 				return nil
 			},
 		},

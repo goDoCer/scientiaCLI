@@ -71,7 +71,7 @@ func (c *APIClient) Login(username string, password string) error {
 	log.WithFields(log.Fields{
 		"accessToken":  c.accessToken,
 		"refreshToken": c.refreshToken,
-	}).Info("Successfully logged in")
+	}).Debug("Successfully logged in")
 
 	return nil
 }
@@ -106,7 +106,7 @@ func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
 	refreshReq.Header.Add("Authorization", "Bearer "+c.refreshToken)
 	refreshResp, err := c.Client.Do(refreshReq)
 	if err != nil {
-		return nil, errors.Wrap(err, "Couldn't refresh access token")
+		return nil, errors.Wrap(err, "Couldn't refresh access token, please login again")
 	}
 
 	var refreshResponse LoginTokens
@@ -140,7 +140,7 @@ func (c *APIClient) GetCourses() ([]Course, error) {
 	if err != nil {
 		return nil, errors.New("Error fetching your courses from scientia, have you logged in?")
 	}
-	return courses, err
+	return courses, nil
 }
 
 // ListFiles returns the list of resources that are files for a course

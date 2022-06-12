@@ -45,6 +45,8 @@ var commands = []*cli.Command{
 			if err != nil {
 				return err
 			}
+			fmt.Println()
+			
 			password := string(bytePassword)
 			err = client.Login(shortcode, password)
 			if err != nil {
@@ -54,7 +56,7 @@ var commands = []*cli.Command{
 			cfg.updateTokens(client.GetTokens())
 			err = cfg.save(configPath)
 			if err == nil {
-				fmt.Println("Login successful")
+				log.Info("Login successful")
 			}
 			return err
 		},
@@ -185,6 +187,10 @@ func downloadCourse(course scientia.Course) error {
 	wg.Wait()
 	return nil
 }
+
+// func ensureLoggedIn(ctx *cli.Context) error {
+// 	tokens := client.GetTokens()
+// }
 
 //Sad times for this abstraction
 // func pFor[T any](tasks []T, function func(task T) []error) []error {
