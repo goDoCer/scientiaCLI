@@ -52,9 +52,11 @@ var commands = []*cli.Command{
 			}
 
 			cfg.updateTokens(client.GetTokens())
-			cfg.save(configPath)
-
-			return nil
+			err = cfg.save(configPath)
+			if err == nil {
+				fmt.Println("Login successful")
+			}
+			return err
 		},
 	},
 	{
@@ -153,7 +155,7 @@ func downloadCourse(course scientia.Course) error {
 		}
 	}
 
-	bar := progressbar.Default(int64(len(files)), "Downloading files")
+	bar := progressbar.Default(int64(len(files)), fmt.Sprintf("Downloading files for course: %s", course.Code))
 
 	var wg sync.WaitGroup
 
