@@ -6,6 +6,7 @@ import (
 
 	"github.com/goDoCer/scientiaCLI/logging"
 	"github.com/goDoCer/scientiaCLI/scientia"
+	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
@@ -16,6 +17,8 @@ var (
 	cfg        config
 	configPath string
 	verbose    bool
+
+	errNotLoggedIn = errors.New("not logged in, login using the login command")
 )
 
 // App is the main entry point for the CLI
@@ -61,7 +64,11 @@ func NewCLIApp() App {
 				if err != nil {
 					return err
 				}
-				tokens := cfg.tokens()
+				tokens, found := cfg.tokens()
+				if !found {
+					return errNotLoggedIn
+				}
+
 				client.AddTokens(tokens)
 
 				log.SetOutput(logging.L)
