@@ -70,23 +70,19 @@ var commands = []*cli.Command{
 			}
 			found := false
 
-			var wg sync.WaitGroup
-
+			// TODO? make it concurrent
 			for _, course := range courses {
 				if (course.Title == courseTitle || courseTitle == "all") && course.HasMaterials {
-					wg.Add(1)
-					go func(course scientia.Course) {
-						defer wg.Done()
+					func(course scientia.Course) {
 						err := downloadCourse(course)
 						if err != nil {
-							fmt.Println(err) //TODO: send this to a channel
+							fmt.Println(err)
 						}
 					}(course)
 					found = true
 				}
 			}
 
-			wg.Wait()
 			if !found {
 				return errors.New("Course does not exist")
 			}
