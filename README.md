@@ -26,4 +26,10 @@ Coming soon (Make an issue if you want this really quick)
 
 To only download the materials for a particular course, say COMP40009 Computing Practical, run `scientia-cli download 40009`.
 
+## How to install Go
+1. Get the latest tar for your OS from [here](https://go.dev/dl/) by running `wget <link you just copied>`
+2. Run `rm -rf /usr/local/go && tar -C /usr/local -xzf <go1.XX.X.os-arch.tar.gz>`
+3. Add go to your PATH by running `echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc`
+4. Run `source ~/.bashrc` to update your PATH
+
 To request features/report bugs, feel free to raise an issue or even create a PR :)
