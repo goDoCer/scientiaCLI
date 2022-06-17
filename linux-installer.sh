@@ -28,6 +28,8 @@ echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
 
 # FISH 
 set -U fish_user_paths /usr/local/go/bin \$fish_user_paths
+
+Run source ~/.bashrc afterwards
 ======================================================================================================
 EndOfMessage
 
