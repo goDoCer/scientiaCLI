@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
-go build -o scientia-cli
+curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
+    | grep "browser_download_url" \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+    | wget -O scientia-cli -qi -
+    
 sudo mkdir -p /usr/local/bin/scientia-cli
 sudo mv scientia-cli /usr/local/bin/scientia-cli/
 
