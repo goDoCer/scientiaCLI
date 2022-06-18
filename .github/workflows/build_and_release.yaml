@@ -1,0 +1,33 @@
+name: Build_And_Release
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Build
+      run: go build -v -o scientia-cli ./...
+      
+    - name: Test
+      run: go test -v ./...
+
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: "Release Build"
+        files: |
+          scientia-cli
