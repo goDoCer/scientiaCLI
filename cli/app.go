@@ -1,6 +1,8 @@
 package cli
 
 import (
+	cmds "github.com/goDoCer/scientiaCLI/cli/commands"
+	"github.com/goDoCer/scientiaCLI/cli/config"
 	"os"
 	"path"
 
@@ -12,7 +14,7 @@ import (
 
 var (
 	client     scientia.APIClient
-	cfg        config
+	cfg        config.Config
 	configPath string
 )
 
@@ -23,12 +25,21 @@ type App struct {
 
 // NewCLIApp creates a new instance of CLIApp
 func NewCLIApp() App {
+
+	// List of all commands available in the CLI
+	var allCommands = []*cli.Command{
+		cmds.Login,
+		cmds.Download,
+		cmds.SaveDir,
+		cmds.Config,
+	}
+
 	return App{
 		App: cli.App{
 			Name:                 "scientia",
 			Usage:                "Scientia is a command line interface for the Scientia API",
 			EnableBashCompletion: true,
-			Commands:             commands,
+			Commands:             allCommands,
 			ExitErrHandler: func(c *cli.Context, err error) {
 				if err != nil {
 					log.Error(err)
@@ -43,14 +54,14 @@ func NewCLIApp() App {
 					return err
 				}
 
-				// reading the config from the executable's directory
+				// reading the Config from the executable's directory
 				configPath = path.Join(path.Dir(filepath), "config.json")
-				cfg, err = loadConfig(configPath)
+				cfg, err = config.LoadConfig(configPath)
 				if err != nil {
 					return err
 				}
 
-				tokens := cfg.tokens()
+				tokens := cfg.Tokens()
 
 				client.AddTokens(tokens)
 
@@ -58,8 +69,7 @@ func NewCLIApp() App {
 			},
 			After: func(ctx *cli.Context) error {
 				tokens := client.GetTokens()
-				cfg.updateTokens(tokens)
-
+				cfg.UpdateTokens(tokens)
 				return nil
 			},
 		},

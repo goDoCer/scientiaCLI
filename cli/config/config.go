@@ -1,4 +1,4 @@
-package cli
+package config
 
 import (
 	"encoding/json"
@@ -7,31 +7,31 @@ import (
 	"github.com/goDoCer/scientiaCLI/scientia"
 )
 
-// config is used to configure App
-type config struct {
+// Config is used to configure App
+type Config struct {
 	SaveDir      string `json:"saveDir"`
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 }
 
-// loadConfig reads the filepath and returns a Config
-func loadConfig(filepath string) (config, error) {
+// LoadConfig reads the filepath and returns a Config
+func LoadConfig(filepath string) (Config, error) {
 	file, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return config{}, err
+		return Config{}, err
 	}
 
-	var cfg config
+	var cfg Config
 	err = json.Unmarshal(file, &cfg)
 	if err != nil {
-		return config{}, err
+		return Config{}, err
 	}
 
 	return cfg, nil
 }
 
-// save writes the Config to the filepath
-func (cfg config) save(filepath string) error {
+// Save writes the Config to the filepath
+func (cfg Config) Save(filepath string) error {
 	file, err := json.Marshal(cfg)
 	if err != nil {
 		return err
@@ -45,14 +45,14 @@ func (cfg config) save(filepath string) error {
 	return nil
 }
 
-func (cfg *config) tokens() scientia.LoginTokens {
+func (cfg *Config) Tokens() scientia.LoginTokens {
 	return scientia.LoginTokens{
 		AccessToken:  cfg.AccessToken,
 		RefreshToken: cfg.RefreshToken,
 	}
 }
 
-func (cfg *config) updateTokens(tokens scientia.LoginTokens) {
+func (cfg *Config) UpdateTokens(tokens scientia.LoginTokens) {
 	cfg.AccessToken = tokens.AccessToken
 	cfg.RefreshToken = tokens.RefreshToken
 }
