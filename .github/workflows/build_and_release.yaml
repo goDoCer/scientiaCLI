@@ -18,9 +18,7 @@ jobs:
         go-version: 1.18
 
     - name: Build
-      run: |
-        go build -v -o scientia-cli
-        chmod +x scientia-cli
+      run: go build -v -o scientia-cli
       
     - name: Test
       run: go test -v ./...

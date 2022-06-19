@@ -5,6 +5,8 @@ curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
     | cut -d : -f 2,3 \
     | tr -d \" \
     | wget -O scientia-cli -qi -
+
+chmod +x scientia-cli
     
 sudo mkdir -p /usr/local/bin/scientia-cli
 sudo mv scientia-cli /usr/local/bin/scientia-cli/
