@@ -46,7 +46,7 @@ var commands = []*cli.Command{
 				return err
 			}
 			fmt.Println()
-			
+
 			password := string(bytePassword)
 			err = client.Login(shortcode, password)
 			if err != nil {
@@ -65,7 +65,7 @@ var commands = []*cli.Command{
 		Name:  "download",
 		Usage: "download a file from scientia",
 		Action: func(c *cli.Context) error {
-			courseTitle := c.Args().First()
+			courseCode := c.Args().First()
 			courses, err := client.GetCourses()
 			if err != nil {
 				return err
@@ -74,7 +74,7 @@ var commands = []*cli.Command{
 
 			// TODO? make it concurrent
 			for _, course := range courses {
-				if (course.Title == courseTitle || courseTitle == "all") && course.HasMaterials {
+				if (course.Code == courseCode || courseCode == "all") && course.HasMaterials {
 					func(course scientia.Course) {
 						err := downloadCourse(course)
 						if err != nil {
