@@ -24,6 +24,8 @@ Coming soon (Make an issue if you want this really quick)
 3. Set the save directory, `scientia-cli save-dir <save-directory>`
 4. Download all the materials `scientia-cli download all`
 
+Note that the `download` command only downloads files that have been updated on scienttia. It will only download a file if the file on scientia is newer than the file present on your machine. 
+
 To only download the materials for a particular course, say COMP40009 Computing Practical, run `scientia-cli download 40009`.
 
 To request features/report bugs, feel free to raise an issue or even create a PR :)
