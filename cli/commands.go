@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"sync"
 	"syscall"
 	"time"
@@ -46,7 +47,7 @@ var commands = []*cli.Command{
 				return err
 			}
 			fmt.Println()
-			
+
 			password := string(bytePassword)
 			err = client.Login(shortcode, password)
 			if err != nil {
@@ -106,7 +107,11 @@ var commands = []*cli.Command{
 			if dir == "" {
 				return errors.New("Please enter a directory")
 			}
-			cfg.SaveDir = dir
+			absPath, err := filepath.Abs(dir)
+			if err != nil {
+				return err
+			}
+			cfg.SaveDir = absPath
 			log.Info("Save directory set to ", cfg.SaveDir)
 			return cfg.save(configPath)
 		},
