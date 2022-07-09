@@ -34,6 +34,12 @@ To only download the materials for a particular course, say COMP40009 Computing 
 
 The [cron](https://en.wikipedia.org/wiki/Cron) command-line utility is a job scheduler on Unix-like operating systems. Schedule the download command to run everyday.
 
+Make sure that you have added the following line to your `~/.bashrc` or `~/.bash_profile`.
+
+```sh
+"export PATH=$PATH:/usr/local/bin/scientia-cli"
+```
+
 ### Daily Cron Job
 
 Make sure you have logged in and have set a save directory using the `login` and the `save-dir` commands respectively.
