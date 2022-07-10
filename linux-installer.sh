@@ -8,14 +8,21 @@ curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
 
 chmod +x scientia-cli
 
-sudo mkdir -p /usr/local/bin/scientia-cli
-sudo mv scientia-cli /usr/local/bin/scientia-cli/
+INSTALL_DIR="/usr/local/bin/scientia-cli"
+TOKEN_FILE="$INSTALL_DIR/token.txt"
+CFG_FILE="$INSTALL_DIR/config.json"
 
-sudo touch /usr/local/bin/scientia-cli/token.txt
-sudo chmod -R 777 /usr/local/bin/scientia-cli/token.txt
+sudo mkdir -p $INSTALL_DIR
+sudo mv scientia-cli $INSTALL_DIR
 
-sudo cp ./default-config.json /usr/local/bin/scientia-cli/config.json
-sudo chmod -R 777 /usr/local/bin/scientia-cli/config.json
+sudo touch $TOKEN_FILE
+sudo chmod -R 777 $TOKEN_FILE
+
+if [ ! -f $CFG_FILE ]; then
+    sudo cp ./default-config.json $CFG_FILE
+    sudo chmod -R 777 $CFG_FILE
+fi
+
 set +e
 
 cat << EndOfMessage
