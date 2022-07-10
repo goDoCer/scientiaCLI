@@ -1,17 +1,17 @@
 #!/bin/bash
 set -e
 curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
-    | grep "browser_download_url" \
-    | cut -d : -f 2,3 \
-    | tr -d \" \
-    | wget -O scientia-cli -qi -
+| grep "browser_download_url" \
+| cut -d : -f 2,3 \
+| tr -d \" \
+| wget -O scientia-cli -qi -
 
 chmod +x scientia-cli
-    
+
 sudo mkdir -p /usr/local/bin/scientia-cli
 sudo mv scientia-cli /usr/local/bin/scientia-cli/
 
-sudo touch /usr/local/bin/scientia-cli/token.txt  
+sudo touch /usr/local/bin/scientia-cli/token.txt
 sudo chmod -R 777 /usr/local/bin/scientia-cli/token.txt
 
 sudo cp ./default-config.json /usr/local/bin/scientia-cli/config.json
@@ -25,10 +25,10 @@ Add scientia-cli to your path. You can do so by running the command depending up
 # BASH
 echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.bashrc
 
-# ZSH 
+# ZSH
 echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
 
-# FISH 
+# FISH
 set -U fish_user_paths /usr/local/go/bin \$fish_user_paths
 
 Run source ~/.bashrc afterwards
