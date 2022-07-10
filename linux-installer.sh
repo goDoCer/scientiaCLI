@@ -1,10 +1,15 @@
 #!/bin/bash
 set -e
-curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
-| grep "browser_download_url" \
-| cut -d : -f 2,3 \
-| tr -d \" \
-| wget -O scientia-cli -qi -
+
+if [ -z "${SCIENTIA_DEV}" ]; then
+    curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
+    | grep "browser_download_url" \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+    | wget -O scientia-cli -qi -
+else
+    go build -o scientia-cli
+fi
 
 chmod +x scientia-cli
 
