@@ -1,21 +1,33 @@
 #!/bin/bash
 set -e
-curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
+
+if [ -z "${SCIENTIA_DEV}" ]; then
+    curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
     | grep "browser_download_url" \
     | cut -d : -f 2,3 \
     | tr -d \" \
     | wget -O scientia-cli -qi -
+else
+    go build -o scientia-cli
+fi
 
 chmod +x scientia-cli
-    
-sudo mkdir -p /usr/local/bin/scientia-cli
-sudo mv scientia-cli /usr/local/bin/scientia-cli/
 
-sudo touch /usr/local/bin/scientia-cli/token.txt  
-sudo chmod -R 777 /usr/local/bin/scientia-cli/token.txt
+INSTALL_DIR="/usr/local/bin/scientia-cli"
+TOKEN_FILE="$INSTALL_DIR/token.txt"
+CFG_FILE="$INSTALL_DIR/config.json"
 
-sudo cp ./default-config.json /usr/local/bin/scientia-cli/config.json
-sudo chmod -R 777 /usr/local/bin/scientia-cli/config.json
+sudo mkdir -p $INSTALL_DIR
+sudo mv scientia-cli $INSTALL_DIR
+
+sudo touch $TOKEN_FILE
+sudo chmod -R 777 $TOKEN_FILE
+
+if [ ! -f $CFG_FILE ]; then
+    sudo cp ./default-config.json $CFG_FILE
+    sudo chmod -R 777 $CFG_FILE
+fi
+
 set +e
 
 cat << EndOfMessage
@@ -25,10 +37,10 @@ Add scientia-cli to your path. You can do so by running the command depending up
 # BASH
 echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.bashrc
 
-# ZSH 
+# ZSH
 echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
 
-# FISH 
+# FISH
 set -U fish_user_paths /usr/local/go/bin \$fish_user_paths
 
 Run source ~/.bashrc afterwards
