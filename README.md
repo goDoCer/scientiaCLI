@@ -2,6 +2,8 @@
 
 A command line interface for [scientia](https://scientia.doc.ic.ac.uk) for Imperial DoC students to download materials faster and easier.
 
+Look at the [cronjob docs](https://github.com/goDoCer/scientiaCLI#cron-job) with which you never have to worry about downloading materials ever again!
+
 ## Installation
 
 Right now we only support automatic Linux installation, but the code should work for Windows and MacOS.
@@ -24,8 +26,44 @@ Coming soon (Make an issue if you want this really quick)
 3. Set the save directory, `scientia-cli save-dir <save-directory>`
 4. Download all the materials `scientia-cli download all`
 
+
 **Note that the `download` command only downloads files that have been updated on scientia**. It will only download a file, if that file on scientia is newer than the file present on your machine. **If you take notes directly in the provided slides/pdfs** please run the download command with the `--new-only` flag so that you do not lose your work (`scientia-cli download --new-only all`).
 
 To only download the materials for a particular course, say COMP40009 Computing Practical, run `scientia-cli download 40009`.
+
+## Cron Job
+
+The [cron](https://en.wikipedia.org/wiki/Cron) command-line utility is a job scheduler on Unix-like operating systems. Schedule the download command to run everyday.
+
+Make sure that you have added the following line to your `~/.bashrc` or `~/.bash_profile`.
+
+```sh
+"export PATH=$PATH:/usr/local/bin/scientia-cli"
+```
+
+### Daily Cron Job
+
+Make sure you have logged in and have set a save directory using the `login` and the `save-dir` commands respectively.
+
+1. Create the daily cron job file `sudo touch /etc/cron.daily/scientia-cli`.
+2. Open the file using vim (or any other editor) - `sudo vim /etc/cron.daily/scientia-cli`.
+
+   ```sh
+   #! /bin/bash
+
+    # NOTE: confirm your scientia-cli installation location by running `which scientia-cli` accordingly
+   /usr/local/bin/scientia-cli/scientia-cli download all
+   ```
+
+## Cron Job without sudo access/Custom cronjob
+
+1. Run `crontab -u $USER -e`.
+2. Add the following line at the end of the file to run the command at 5:30 am everyday:
+
+   ```sh
+    30 5 * * *  /usr/local/bin/scientia-cli/scientia-cli download all
+   ```
+
+   You can use this [website](https://crontab.guru/#30_5_*_*_*) to figure out what `30 5 * * *` stand for and configure thema ccordingly.
 
 To request features/report bugs, feel free to raise an issue or even create a PR :)
