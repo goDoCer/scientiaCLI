@@ -12,7 +12,7 @@ Right now we only support automatic Linux installation, but the code should work
 
 ```bash
 wget https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/linux-installer.sh
-sh install.sh
+sh linux-installer.sh
 ```
 
 ### Windows/MacOS
@@ -27,7 +27,7 @@ Coming soon (Make an issue if you want this really quick)
 4. Download all the materials `scientia-cli download all`
 
 
-**Note that the `download` command only downloads files that have been updated on scienttia**. It will only download a file if the file on scientia is newer than the file present on your machine. 
+**Note that the `download` command only downloads files that have been updated on scientia**. It will only download a file, if that file on scientia is newer than the file present on your machine. **If you take notes directly in the provided slides/pdfs** please run the download command with the `--new-only` flag so that you do not lose your work (`scientia-cli download --new-only all`).
 
 To only download the materials for a particular course, say COMP40009 Computing Practical, run `scientia-cli download 40009`.
 

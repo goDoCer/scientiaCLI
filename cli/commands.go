@@ -65,6 +65,12 @@ var commands = []*cli.Command{
 	{
 		Name:  "download",
 		Usage: "download a file from scientia",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "new-only",
+				Usage: "do not overwrite existing files",
+			},
+		},
 		Action: func(c *cli.Context) error {
 			courseCode := c.Args().First()
 			courses, err := client.GetCourses()
@@ -77,7 +83,7 @@ var commands = []*cli.Command{
 			for _, course := range courses {
 				if (course.Code == courseCode || courseCode == "all") && course.HasMaterials {
 					func(course scientia.Course) {
-						err := downloadCourse(course)
+						err := downloadCourse(course, c.Bool("new-only"))
 						if err != nil {
 							fmt.Println(err)
 						}
@@ -129,7 +135,7 @@ var commands = []*cli.Command{
 }
 
 // downloadCourse downloads all the files for a course
-func downloadCourse(course scientia.Course) error {
+func downloadCourse(course scientia.Course, newOnly bool) error {
 	files, err := client.ListFiles(course.Code)
 	if len(files) == 0 {
 		log.Info("No files to download for course ", course.FullName())
@@ -149,7 +155,7 @@ func downloadCourse(course scientia.Course) error {
 			log.Println("Trying to create directory", saveDir)
 			err = os.Mkdir(cfg.SaveDir, 0777)
 			if err != nil {
-				log.Fatal("Could not create directory", saveDir)
+				log.Fatal("Could not create directory", saveDir, " because of ", err)
 				return err
 			}
 			os.Mkdir(saveDir, 0777)
@@ -171,8 +177,14 @@ func downloadCourse(course scientia.Course) error {
 
 			fileInfo, err := os.Stat(filepath)
 			if err == nil {
-				scientiaLastModified, err := client.GetFileLastModified(resource.ID)
-				if err != nil || scientiaLastModified.After(fileInfo.ModTime()) {
+				// File already exists
+				if newOnly {
+					log.Warnf("skipping download for file %s because it already exists and the new-only flag is on", resource.Title)
+					return
+				}
+
+				fileLastModified, err := client.GetFileLastModified(resource.ID)
+				if err != nil || fileLastModified.After(fileInfo.ModTime()) {
 					log.Warnf("skipping download for file %s because it has not been updated", resource.Title)
 					return
 				}
@@ -186,6 +198,9 @@ func downloadCourse(course scientia.Course) error {
 			}
 
 			err = os.WriteFile(filepath, data, 0777)
+			if err != nil {
+				fmt.Println(err) //TODO: send this to a channel
+			}
 		}(file)
 	}
 
