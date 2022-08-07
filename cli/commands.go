@@ -63,12 +63,14 @@ var commands = []*cli.Command{
 		},
 	},
 	{
-		Name:  "download",
-		Usage: "download a file from scientia",
+		Name:      "download",
+		Usage:     "download all files for a given course code",
+		ArgsUsage: "<course code>, all",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name:  "new-only",
-				Usage: "do not overwrite existing files",
+				Name:    "new-only",
+				Aliases: []string{"n"},
+				Usage:   "do not overwrite existing files",
 			},
 		},
 		Action: func(c *cli.Context) error {

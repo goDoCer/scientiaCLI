@@ -12,7 +12,6 @@ Right now we only support automatic Linux installation, but the code should work
 
 ```bash
 wget https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/linux-installer.sh
-wget https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/default-config.json
 sh linux-installer.sh
 ```
 

@@ -2,11 +2,15 @@
 set -e
 
 if [ -z "${SCIENTIA_DEV}" ]; then
+    # Fetch latest release form github
     curl -s https://api.github.com/repos/goDoCer/scientiaCLI/releases/latest \
     | grep "browser_download_url" \
     | cut -d : -f 2,3 \
     | tr -d \" \
     | wget -O scientia-cli -qi -
+
+    # Fetch default config file
+    wget https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/default-config.json
 else
     go build -o scientia-cli
 fi
