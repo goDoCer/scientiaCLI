@@ -9,4 +9,4 @@ To start development install Go from [here](https://go.dev/doc/install).
 
 `go run main.go -C` - define custom path to the config file
 
-`go run main.go -s` - show the config variables
+`go run main.go -s` - show the config file variables
