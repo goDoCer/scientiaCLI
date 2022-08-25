@@ -1,12 +1,7 @@
 package main
 
-import (
-	"os"
-
-	"github.com/goDoCer/scientiaCLI/cli"
-)
+import "github.com/goDoCer/scientiaCLI/cmd"
 
 func main() {
-	app := cli.NewCLIApp()
-	app.Run(os.Args)
+	cmd.Execute()
 }

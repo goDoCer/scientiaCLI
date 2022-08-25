@@ -14,6 +14,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	scientiaBaseURL = "https://api-materials.doc.ic.ac.uk/"
+)
+
 // APIClient is the client for the scientia API
 type APIClient struct {
 	http.Client
@@ -29,7 +33,7 @@ func NewAPIClient() APIClient {
 		Client: http.Client{
 			Timeout: time.Second * 100,
 		},
-		baseURL: "https://api-materials.doc.ic.ac.uk/",
+		baseURL: scientiaBaseURL,
 	}
 }
 
