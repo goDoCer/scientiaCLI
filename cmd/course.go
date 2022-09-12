@@ -10,13 +10,12 @@ import (
 // courseCmd represents the course command
 var (
 	courseCode string
-	courseName string
-	courseCmd  = &cobra.Command{
+
+	courseCmd = &cobra.Command{
 		Use:   "course",
 		Short: "downloads all file for a course",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			found := false
 
 			for _, course := range courses {
@@ -26,11 +25,12 @@ var (
 						fmt.Println(err)
 					}
 					found = true
+					break
 				}
 			}
 
 			if !found {
-				return errors.New("course does not exist")
+				return errors.New("specified course does not exist")
 			}
 
 			return nil
@@ -42,6 +42,7 @@ func init() {
 	downloadCmd.AddCommand(courseCmd)
 	courseCmd.PersistentFlags().StringVarP(&courseCode, "code", "c", "", "course code")
 
+	courseCmd.MarkFlagRequired("code")
 	//TODO: add support
 	// courseCmd.PersistentFlags().StringVarP(&courseName, "name", "cn", "", "course name")
 
