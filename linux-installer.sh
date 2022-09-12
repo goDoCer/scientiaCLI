@@ -8,10 +8,12 @@ if [ -z "${SCIENTIA_DEV}" ]; then
     | cut -d : -f 2,3 \
     | tr -d \" \
     | wget -O scientia-cli -qi -
-
+    
     # Fetch default config file
-    wget https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/default-config.json
+    CFG=$(wget -O - https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/default-config.json | cat)
+    
 else
+    CFG=$(cat default-config.json)
     go build -o scientia-cli
 fi
 
@@ -28,7 +30,8 @@ sudo touch $TOKEN_FILE
 sudo chmod -R 777 $TOKEN_FILE
 
 if [ ! -f $CFG_FILE ]; then
-    sudo cp ./default-config.json $CFG_FILE
+    sudo touch $CFG_FILE
+    printf "%s" "$CFG" > $CFG_FILE
     sudo chmod -R 777 $CFG_FILE
 fi
 
@@ -45,7 +48,7 @@ echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.bashrc
 echo "export PATH=\\\$PATH:/usr/local/bin/scientia-cli" >> ~/.zshrc
 
 # FISH
-set -U fish_user_paths /usr/local/go/bin \$fish_user_paths
+set -U fish_user_paths /usr/local/bin/scientia-cli \$fish_user_paths
 
 Run source ~/.bashrc afterwards
 ======================================================================================================
