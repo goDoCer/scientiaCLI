@@ -41,7 +41,9 @@ var (
 func init() {
 	downloadCmd.AddCommand(courseCmd)
 	courseCmd.PersistentFlags().StringVarP(&courseCode, "code", "c", "", "course code")
-	courseCmd.PersistentFlags().StringVarP(&courseName, "name", "n", "", "course name") //TODO: add support
 
-	courseCmd.MarkFlagsMutuallyExclusive("code", "name")
+	//TODO: add support
+	// courseCmd.PersistentFlags().StringVarP(&courseName, "name", "cn", "", "course name")
+
+	// courseCmd.MarkFlagsMutuallyExclusive("code", "name")
 }
