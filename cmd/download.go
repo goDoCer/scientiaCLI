@@ -18,9 +18,9 @@ import (
 
 // downloadCmd represents the download command
 var (
-	newOnly     bool
-	courses     []scientia.Course
-	downloadCmd = &cobra.Command{
+	unmodifiedOnly bool
+	courses        []scientia.Course
+	downloadCmd    = &cobra.Command{
 		Use: "download",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
 			courses, err = client.GetCourses()
@@ -35,14 +35,14 @@ var (
 
 func init() {
 	rootCmd.AddCommand(downloadCmd)
-	downloadCmd.PersistentFlags().BoolVarP(&newOnly, "new-only", "n", false, "do not overwrite existing files")
+	downloadCmd.PersistentFlags().BoolVarP(&unmodifiedOnly, "unmodified-only", "n", false, "do not overwrite existing files")
 }
 
 // TODO!
 // UPDATE downloadCourse to send logs to a channel and then print them together
 // UPDATE downloadCourse to send errots to a channel and then print them together
 // downloadCourse downloads all the files for a course
-func downloadCourse(course scientia.Course, newOnly bool) error {
+func downloadCourse(course scientia.Course, unmodifiedOnly bool) error {
 	files, err := client.ListFiles(course.Code)
 	if len(files) == 0 {
 		log.Info("No files to download for course ", course.FullName())
@@ -85,8 +85,8 @@ func downloadCourse(course scientia.Course, newOnly bool) error {
 			fileInfo, err := os.Stat(filepath)
 			if err == nil {
 				// File already exists
-				if newOnly {
-					log.Warnf("skipping download for file %s because it already exists and the new-only flag is on", resource.Title)
+				if unmodifiedOnly {
+					log.Warnf("skipping download for file %s because it already exists and the unmodified-only flag is on", resource.Title)
 					return
 				}
 

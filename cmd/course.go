@@ -21,7 +21,7 @@ var (
 
 			for _, course := range courses {
 				if (course.Code == courseCode) && course.HasMaterials {
-					err := downloadCourse(course, newOnly)
+					err := downloadCourse(course, unmodifiedOnly)
 					if err != nil {
 						fmt.Println(err)
 					}

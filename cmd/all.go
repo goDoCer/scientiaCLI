@@ -14,7 +14,7 @@ var allCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		for _, course := range courses {
 			if course.HasMaterials {
-				err := downloadCourse(course, newOnly)
+				err := downloadCourse(course, unmodifiedOnly)
 				if err != nil {
 					fmt.Println(err)
 				}
