@@ -9,8 +9,7 @@ Right now we only support automatic Linux installation, but the code should work
 ### Linux
 
 ```bash
-wget https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/linux-installer.sh
-sh linux-installer.sh
+wget -O - https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/linux-installer.sh | bash
 ```
 
 ### Windows/MacOS
