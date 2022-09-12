@@ -11,7 +11,6 @@ if [ -z "${SCIENTIA_DEV}" ]; then
     
     # Fetch default config file
     CFG=$(wget -O - https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/default-config.json | cat)
-    
 else
     CFG=$(cat default-config.json)
     go build -o scientia-cli
@@ -31,8 +30,9 @@ sudo chmod -R 777 $TOKEN_FILE
 
 if [ ! -f $CFG_FILE ]; then
     sudo touch $CFG_FILE
-    printf "%s" "$CFG" > $CFG_FILE
     sudo chmod -R 777 $CFG_FILE
+    
+    echo "$CFG" | sudo tee $CFG_FILE > /dev/null
 fi
 
 set +e
