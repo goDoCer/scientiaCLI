@@ -7,10 +7,10 @@ if [ -z "${SCIENTIA_DEV}" ]; then
     | grep "browser_download_url" \
     | cut -d : -f 2,3 \
     | tr -d \" \
-    | wget -O scientia-cli -qi -
+    | wget -qO scientia-cli -qi -
     
     # Fetch default config file
-    CFG=$(wget -O - https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/default-config.json | cat)
+    CFG=$(wget -qO - https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/default-config.json | cat)
 else
     CFG=$(cat default-config.json)
     go build -o scientia-cli
