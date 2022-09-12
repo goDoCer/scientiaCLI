@@ -129,13 +129,11 @@ func (c *APIClient) GetCourses() ([]Course, error) {
 	year := getCurrentAcademicYear()
 
 	req, err := http.NewRequest("GET", baseURL+"courses/"+year, nil)
-
 	if err != nil {
 		panic(err)
 	}
 	resp, err := c.Do(req)
-
-	if err != nil {
+	if err = checkResponse(resp, err); err != nil {
 		return nil, err
 	}
 
