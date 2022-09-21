@@ -57,7 +57,6 @@ var (
 			return nil
 		},
 		PersistentPostRun: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Scientia CLI is now exiting...")
 			tokens := client.GetTokens()
 			cfg.updateTokens(tokens)
 		},
