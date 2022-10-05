@@ -28,5 +28,10 @@ To download files for a particular course, you can run `scientia-cli download co
 
 **Note that the `download` command only downloads files that have been updated on scientia**. It will only download a file, if that file on scientia is newer than the file present on your machine. **If you take notes directly in the provided slides/pdfs** please run the download command with the `--unmodified-only` flag so that you do not lose your work (`scientia-cli download --unmodified-only all`).
 
+## Example
+
+![image](https://user-images.githubusercontent.com/55818107/194059192-ac83bfeb-516f-482e-9b12-4c60a9b48552.png)
+
+Tip: You can set the save directory to a directory in your windows filesystem as well! for e.g. `scientia-cli save-dir /mnt/c/Users/Pranav\ Bansal/Documents/Imperial/4th\ Year/`
 
 To request features/report bugs, feel free to raise an issue or even create a PR :)
