@@ -12,7 +12,15 @@ Right now we only support automatic Linux installation, but the code should work
 wget -qO - https://raw.githubusercontent.com/goDoCer/scientiaCLI/main/linux-installer.sh | bash
 ```
 
-### Windows/MacOS
+### macOS
+
+scientiaCLI can be installed via [MacPorts](https://ports.macports.org/port/scientiaCLI/):
+
+```bash
+sudo port install scientiaCLI
+```
+
+### Windows
 
 Coming soon (Make an issue if you want this really quick)
 
