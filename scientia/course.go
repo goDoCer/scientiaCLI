@@ -8,7 +8,7 @@ type Course struct {
 }
 
 func (c Course) FullName() string {
-	return c.Title + " - " + c.Code
+	return c.Code + "-" + c.Title
 }
 
 type Resource struct {
