@@ -19,7 +19,7 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:   "scientia-cli",
-		Short: "scientia-cli is a command line interface for the Scientia API",
+		Short: "scientia-cli is a command line interface for Scientia",
 		// Long: ``, TODO: add long description
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			client = scientia.NewAPIClient()
