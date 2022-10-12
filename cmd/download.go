@@ -46,14 +46,15 @@ func init() {
 func downloadCourse(course scientia.Course, unmodifiedOnly bool) error {
 	files, err := client.ListFiles(course.Code)
 	if len(files) == 0 {
-		log.Info("No files to download for course ", course.FullName())
+		log.Info("No files to download for course ", course.Title)
 		return nil
 	}
 
 	if err != nil {
 		return err
 	}
-	dirName := course.FullName()
+
+	dirName := course.FullName(cfg.Template)
 	saveDir := path.Join(cfg.SaveDir, dirName)
 	err = os.Mkdir(saveDir, 0777)
 

@@ -12,6 +12,7 @@ type config struct {
 	SaveDir      string `json:"saveDir"`
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
+	Template     string `json:"template"`
 }
 
 // loadConfig reads the filepath and returns a Config

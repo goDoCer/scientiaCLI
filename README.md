@@ -2,10 +2,9 @@
 
 A command line interface for [scientia](https://scientia.doc.ic.ac.uk) for Imperial DoC students to download materials faster and easier.
 
-
 ## Why?
-Instantly download all materials in a nice directory structure on your machine! No need to download zipped directories, unzip them, replace exitsing files, etc.
 
+Instantly download all materials in a nice directory structure on your machine! No need to download zipped directories, unzip them, replace exitsing files, etc.
 
 ## Installation
 
@@ -38,9 +37,12 @@ To download files for a particular course, you can run `scientia-cli download co
 
 Tip: You can set the save directory to a directory in your windows filesystem as well! for e.g. `scientia-cli save-dir /mnt/c/Users/Pranav\ Bansal/Documents/Imperial/4th\ Year/`
 
+## Course folder names
+
+If you do not like the course folder names you can update the Go template used to generate them - `scientia-cli set-templ "{{.Title}}"` if you just want the course title or run `scientia-cli set-templ {{.Code}}` if you just want the course code. You can read more about Go templates here - https://golang.org/pkg/text/template/.
 
 ## Security
-Your password and username are not stored anywhere. Only your refresh token and your access tokens are stored on your machine which are used for accessing the materials.
 
+Your password and username are not stored anywhere. Only your refresh token and your access tokens are stored on your machine which are used for accessing the materials.
 
 To request features/report bugs, feel free to raise an issue or even create a PR :)

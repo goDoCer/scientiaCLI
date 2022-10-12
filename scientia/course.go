@@ -1,5 +1,12 @@
 package scientia
 
+import (
+	"bytes"
+	"text/template"
+)
+
+const defaultTempl = "{{.Title}} - {{.Code}}"
+
 type Course struct {
 	Title        string `json:"title"`
 	Code         string `json:"code"`
@@ -7,8 +14,19 @@ type Course struct {
 	HasMaterials bool   `json:"has_materials"`
 }
 
-func (c Course) FullName() string {
-	return c.Code + "-" + c.Title
+func (c Course) FullName(templ string) string {
+	if templ == "" {
+		templ = defaultTempl
+	}
+
+	tmpl, err := template.New("course").Parse(templ)
+
+	if err != nil {
+		panic(err)
+	}
+	var buf bytes.Buffer
+	tmpl.Execute(&buf, c)
+	return buf.String()
 }
 
 type Resource struct {
