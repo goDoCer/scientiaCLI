@@ -15,7 +15,9 @@ import (
 )
 
 const (
-	scientiaBaseURL = "https://api-materials.doc.ic.ac.uk/"
+	scientiaBaseURL        = "https://scientia.doc.ic.ac.uk/api/"
+	accessTokenCookieName  = "access_token_cookie"
+	refreshTokenCookieName = "refresh_token_cookie"
 )
 
 // APIClient is the client for the scientia API
@@ -57,20 +59,20 @@ func (c *APIClient) Login(username string, password string) error {
 		return err
 	}
 
-	resp, err := c.Post(baseURL+"auth/login", "application/json", bytes.NewBuffer(jsonValue))
+	resp, err := c.Post(c.baseURL+"auth/login", "application/json", bytes.NewBuffer(jsonValue))
 	if err := checkResponse(resp, err); err != nil {
 		return err
 	}
 
-	var response LoginTokens
-	err = json.NewDecoder(resp.Body).Decode(&response)
-
-	if err != nil {
-		return errors.Wrap(err, "Error decoding login response")
+	for _, cookie := range resp.Cookies() {
+		fmt.Println(cookie.Name, cookie.Value)
+		switch cookie.Name {
+		case accessTokenCookieName:
+			c.accessToken = cookie.Value
+		case refreshTokenCookieName:
+			c.refreshToken = cookie.Value
+		}
 	}
-
-	c.accessToken = response.AccessToken
-	c.refreshToken = response.RefreshToken
 
 	log.WithFields(log.Fields{
 		"accessToken":  c.accessToken,
@@ -105,7 +107,7 @@ func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
 		return resp, err
 	}
 
-	refreshReq, _ := http.NewRequest("POST", baseURL+"auth/refresh", nil)
+	refreshReq, _ := http.NewRequest("POST", c.baseURL+"auth/refresh", nil)
 
 	refreshReq.Header.Add("Authorization", "Bearer "+c.refreshToken)
 	refreshResp, err := c.Client.Do(refreshReq)
@@ -128,7 +130,7 @@ func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
 func (c *APIClient) GetCourses() ([]Course, error) {
 	year := getCurrentAcademicYear()
 
-	req, err := http.NewRequest("GET", baseURL+"courses/"+year, nil)
+	req, err := http.NewRequest("GET", c.baseURL+"courses/"+year, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -149,7 +151,7 @@ func (c *APIClient) GetCourses() ([]Course, error) {
 func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 	year := getCurrentAcademicYear()
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources?year=%s&course=%s", baseURL, year, courseCode), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%sresources?year=%s&course=%s", c.baseURL, year, courseCode), nil)
 
 	if err != nil {
 		panic(err)
@@ -161,7 +163,7 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 
 	var resources []Resource
 	err = json.NewDecoder(resp.Body).Decode(&resources)
-
+	
 	files := make([]Resource, 0)
 	for _, resource := range resources {
 		if resource.Type == "file" {
@@ -179,7 +181,7 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 
 //GetFileLastModified returns the last time the resource was modified on the server
 func (c *APIClient) GetFileLastModified(resourceID int) (time.Time, error) {
-	req, err := http.NewRequest("HEAD", fmt.Sprintf("%sresources/%d/file", baseURL, resourceID), nil)
+	req, err := http.NewRequest("HEAD", fmt.Sprintf("%sresources/%d/file", c.baseURL, resourceID), nil)
 	if err != nil {
 		return time.Now(), err
 	}
@@ -194,7 +196,7 @@ func (c *APIClient) GetFileLastModified(resourceID int) (time.Time, error) {
 
 // Download downloads the given resource from the API
 func (c *APIClient) Download(ctx context.Context, resourceID int) ([]byte, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%sresources/%d/file", baseURL, resourceID), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%sresources/%d/file", c.baseURL, resourceID), nil)
 	if err != nil {
 		panic(err)
 	}
