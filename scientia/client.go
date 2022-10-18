@@ -100,8 +100,9 @@ func (c *APIClient) AddTokens(tokens LoginTokens) {
 // if the request fails because the auth token has expired
 //  it uses the refresh token to get a new auth token and make the request again
 func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
-	req.Header.Set("Authorization", "Bearer "+c.accessToken)
+	req.Header.Set("Cookie", "access_token_cookie="+c.accessToken)
 	resp, err := c.Client.Do(req)
+
 	// token has not expired
 	if err != nil || (resp.StatusCode == http.StatusOK && resp.StatusCode != http.StatusUnauthorized) {
 		return resp, err
@@ -109,7 +110,7 @@ func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
 
 	refreshReq, _ := http.NewRequest("POST", c.baseURL+"auth/refresh", nil)
 
-	refreshReq.Header.Add("Authorization", "Bearer "+c.refreshToken)
+	req.Header.Set("Cookie", "refresh_token_cookie="+c.refreshToken)
 	refreshResp, err := c.Client.Do(refreshReq)
 	if err != nil {
 		return nil, errors.Wrap(err, "Couldn't refresh access token, please login again")
@@ -122,7 +123,8 @@ func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	c.accessToken = refreshResponse.AccessToken
-	req.Header.Set("Authorization", "Bearer "+c.accessToken)
+	c.refreshToken = refreshResponse.RefreshToken
+	req.Header.Set("Cookie", "access_token_cookie="+c.accessToken)
 	return c.Client.Do(req)
 }
 
@@ -163,13 +165,13 @@ func (c *APIClient) ListFiles(courseCode string) ([]Resource, error) {
 
 	var resources []Resource
 	err = json.NewDecoder(resp.Body).Decode(&resources)
-	
+
 	files := make([]Resource, 0)
 	for _, resource := range resources {
 		if resource.Type == "file" {
 			ext := path.Ext(resource.Title)
 			if ext == "" {
-				resource.Title = resource.Title + "." + path.Ext(resource.Path)
+				resource.Title = resource.Title + path.Ext(resource.Path)
 			}
 
 			files = append(files, resource)

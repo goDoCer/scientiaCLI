@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 	"sync"
 	"time"
 
@@ -82,7 +83,10 @@ func downloadCourse(course scientia.Course, unmodifiedOnly bool) error {
 		go func(resource scientia.Resource) {
 			defer wg.Done()
 			defer bar.Add(1)
-			filepath := path.Join(saveDir, resource.Title)
+
+			// Escaping title because it is supposed to be a filename
+			escapedTitle := strings.ReplaceAll(resource.Title, "/", " ")
+			filepath := path.Join(saveDir, escapedTitle)
 
 			fileInfo, err := os.Stat(filepath)
 			if err == nil {

@@ -13,7 +13,6 @@ import (
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "login to scientia",
-	Long:  `TODO login desc`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		var shortcode string
