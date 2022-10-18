@@ -22,15 +22,7 @@ var (
 	unmodifiedOnly bool
 	courses        []scientia.Course
 	downloadCmd    = &cobra.Command{
-		Use: "download",
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
-			callPersistentPreRunE(cmd, args)
-			courses, err = client.GetCourses()
-			if err != nil {
-				return err
-			}
-			return nil
-		},
+		Use:   "download",
 		Short: "download files from scientia",
 	}
 )

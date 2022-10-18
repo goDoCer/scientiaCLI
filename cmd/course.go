@@ -15,12 +15,15 @@ var (
 		Use:   "course",
 		Short: "downloads all file for a course",
 		Long:  ``,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			found := false
-
+			courses, err = client.GetCourses()
+			if err != nil {
+				return err
+			}
 			for _, course := range courses {
 				if (course.Code == courseCode) && course.HasMaterials {
-					err := downloadCourse(course, unmodifiedOnly)
+					err = downloadCourse(course, unmodifiedOnly)
 					if err != nil {
 						fmt.Println(err)
 					}

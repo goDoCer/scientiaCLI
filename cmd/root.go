@@ -79,11 +79,3 @@ func init() {
 	rootCmd.PersistentFlags().MarkHidden("config")
 	rootCmd.PersistentFlags().MarkHidden("show-config")
 }
-
-func callPersistentPreRunE(cmd *cobra.Command, args []string) {
-	if parent := cmd.Parent(); parent != nil {
-		if parent.PersistentPreRunE != nil {
-			parent.PersistentPreRunE(parent, args)
-		}
-	}
-}

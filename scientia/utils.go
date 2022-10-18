@@ -13,7 +13,7 @@ func checkResponse(resp *http.Response, err error) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("Error: Response Status is not 200 but is " + resp.Status)
+		return errors.New("response status is not 200 but is " + resp.Status)
 	}
 
 	return nil

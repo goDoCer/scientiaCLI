@@ -64,6 +64,17 @@ func (c *APIClient) Login(username string, password string) error {
 		return err
 	}
 
+	c.setAuthTokens(resp)
+
+	log.WithFields(log.Fields{
+		"accessToken":  c.accessToken,
+		"refreshToken": c.refreshToken,
+	}).Debug("Successfully logged in")
+
+	return nil
+}
+
+func (c *APIClient) setAuthTokens(resp *http.Response) {
 	for _, cookie := range resp.Cookies() {
 		fmt.Println(cookie.Name, cookie.Value)
 		switch cookie.Name {
@@ -73,13 +84,6 @@ func (c *APIClient) Login(username string, password string) error {
 			c.refreshToken = cookie.Value
 		}
 	}
-
-	log.WithFields(log.Fields{
-		"accessToken":  c.accessToken,
-		"refreshToken": c.refreshToken,
-	}).Debug("Successfully logged in")
-
-	return nil
 }
 
 // GetTokens returns the tokens as a LoginTokenStruct which can marshalled to json
@@ -116,14 +120,7 @@ func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
 		return nil, errors.Wrap(err, "Couldn't refresh access token, please login again")
 	}
 
-	var refreshResponse LoginTokens
-	err = json.NewDecoder(refreshResp.Body).Decode(&refreshResponse)
-	if err != nil {
-		return nil, errors.Wrap(err, "Couldn't decode refresh token response")
-	}
-
-	c.accessToken = refreshResponse.AccessToken
-	c.refreshToken = refreshResponse.RefreshToken
+	c.setAuthTokens(refreshResp)
 	req.Header.Set("Cookie", "access_token_cookie="+c.accessToken)
 	return c.Client.Do(req)
 }
