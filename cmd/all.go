@@ -12,12 +12,13 @@ var allCmd = &cobra.Command{
 	Short: "download all files from scientia",
 	Long:  `TODO`,
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
+		courses, err = client.GetCourses()
+		if err != nil {
+			return err
+		}
+
 		for _, course := range courses {
 			if course.HasMaterials {
-				courses, err = client.GetCourses()
-				if err != nil {
-					return err
-				}
 				err := downloadCourse(course, unmodifiedOnly)
 				if err != nil {
 					fmt.Println(err)

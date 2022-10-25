@@ -108,19 +108,24 @@ func (c *APIClient) Do(req *http.Request) (*http.Response, error) {
 	resp, err := c.Client.Do(req)
 
 	// token has not expired
-	if err != nil || (resp.StatusCode == http.StatusOK && resp.StatusCode != http.StatusUnauthorized) {
+	if err != nil || (resp.StatusCode == http.StatusOK || resp.StatusCode != http.StatusUnprocessableEntity) {
 		return resp, err
 	}
 
 	refreshReq, _ := http.NewRequest("POST", c.baseURL+"auth/refresh", nil)
 
-	req.Header.Set("Cookie", "refresh_token_cookie="+c.refreshToken)
+	refreshReq.Header.Set("Cookie", "access_token_cookie="+c.accessToken)
+	refreshReq.Header.Set("Cookie", "refresh_token_cookie="+c.refreshToken)
 	refreshResp, err := c.Client.Do(refreshReq)
 	if err != nil {
 		return nil, errors.Wrap(err, "Couldn't refresh access token, please login again")
 	}
 
+	fmt.Printf("refreshResp.StatusCode: %v\n", refreshResp.StatusCode)
+
+	old := c.accessToken
 	c.setAuthTokens(refreshResp)
+	fmt.Println(c.accessToken == old)
 	req.Header.Set("Cookie", "access_token_cookie="+c.accessToken)
 	return c.Client.Do(req)
 }
