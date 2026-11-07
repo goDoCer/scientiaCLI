@@ -19,3 +19,14 @@ scientiaCLI
 # Dependency directories (remove the comment below to include it)
 # vendor/
 .vscode
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets / user state (belt-and-suspenders; tokens live in ~/.scientia-cli/)
+tokens.json
+.scientia-cli/
+.env
+.env.*
